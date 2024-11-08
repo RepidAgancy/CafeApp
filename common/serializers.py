@@ -41,7 +41,7 @@ class FoodListSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Food
         fields = [
-            'id', 'name', 'image', 'price'
+            'id', 'name_uz', 'name_ru', 'name_en', 'image', 'price'
         ]
 
 
@@ -49,7 +49,9 @@ class FoodDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Food
         fields = [
-            'id', 'name', 'image', 'price', 'food_info', 'food_composition',
+            'id', 'name_uz', 'name_ru', 'name_en', 'image', 'price',
+            'food_info_uz','food_info_ru', 'food_info_en',
+            'food_composition_uz', 'food_composition_ru', 'food_composition_en'
         ]
 
 
@@ -183,10 +185,12 @@ class OrderConfirmedSerializer(serializers.Serializer):
             raise serializers.ValidationError({'message': 'Order is confirmed'})
         return data
 
-    def save(self):
+    def save(self, *args, **kwargs):
         order = models.Order.objects.get(id=self.validated_data['order_id'])
         order.is_confirm = True
+        order.status = models.DONE
         order.save()
+
         return {
             'message': 'Order is successfully confirmed'
         }
@@ -208,5 +212,8 @@ class OrderListSerializer(serializers.ModelSerializer):
 
     def get_total_price(self, obj):
         total_price = obj.cart.total_price
-        return total_price
+        return f"{total_price:.3f} UZS"
+
+
+
 

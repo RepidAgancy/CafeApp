@@ -15,5 +15,10 @@ urlpatterns = [
     path('cart/<int:id>/', views.CartDetailApiView.as_view(), name='cart-detail'),
     path('order/create/', views.OrderCreateApiView.as_view(), name='order-create'),
     path('order/confirm/', views.OrderConfirmedApiView.as_view(), name='order-confirmed'),
-    path('orders/', views.OrderListApiView.as_view(), name='orders'),
+    path('orders/in-process/', views.OrderListInProcessApiView.as_view(), name='orders'),
+    path('orders/is-done/', views.OrderListIsDoneApiView.as_view(), name='orders'),
+    path('finish-day/', views.FinishDayApiView.as_view(), name='finish-day'),
+    # path('order-receipt/is-confimed/list/', views.OrderReceiptListIsConfirmedApiView.as_view(), name='order-reciept'),
+    # path('order-receipt/is-not-confimed/list/', views.OrderReceiptListIsNotConfirmedApiView.as_view(), name='order-reciept'),
+    # path('order-receipt/confim/', views.OrderReceiptConfirmApiView.as_view(), name='order-receipt'),
 ]
