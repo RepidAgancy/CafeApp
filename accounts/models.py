@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.utils.translation import gettext_lazy as _
 
-ADMIN, WAITER, CASHIER, STOREKEEPER = ('admin', 'afitsant', 'kassir', 'omborchi')
+ADMIN, WAITER, CASHIER, STOREKEEPER = (_('admin'), _('afitsant'), _('kassir'), _('omborchi'))
 
 class User(AbstractUser):
     USER_TYPE = (
