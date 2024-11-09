@@ -1,8 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from accounts.models import User
-
 
 BUSY, NOT_BUSY = (_('band'), _('band emas'))
 IN_PROCESS, DONE = (_('jarayonda'), _('bajarildi'))
@@ -21,7 +19,7 @@ class Table(BaseModel):
         (BUSY, BUSY),
         (NOT_BUSY, NOT_BUSY),
     )
-    number = models.IntegerField(unique=True, default=0)
+    number = models.PositiveIntegerField(unique=True, default=0)
     type = models.CharField(max_length=20, choices=TYPE, default=NOT_BUSY)
 
     def __str__(self):
@@ -47,7 +45,7 @@ class CategoryFood(BaseModel):
 class Food(BaseModel):
     name = models.CharField(max_length=50)
     image = models.ImageField(upload_to='common/food/image/%Y/%m/%d')
-    price = models.DecimalField(max_digits=10, decimal_places=3)
+    price = models.PositiveIntegerField()
     category = models.ForeignKey(CategoryFood, on_delete=models.CASCADE, related_name='food')
     food_info = models.TextField()
     food_composition = models.TextField()
@@ -62,8 +60,8 @@ class Food(BaseModel):
 
 class Cart(BaseModel):
     table = models.ForeignKey(Table, on_delete=models.CASCADE)
-    total_price = models.DecimalField(max_digits=10, decimal_places=3, default=0.000)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    total_price = models.PositiveIntegerField(default=0.000)
+    user = models.ForeignKey('accounts.User', on_delete=models.CASCADE, related_name='orders')
     is_confirm = models.BooleanField(default=False)
 
     def __str__(self):
@@ -92,9 +90,14 @@ class Order(BaseModel):
         (IN_PROCESS, IN_PROCESS),
         (DONE, DONE),
     )
+    TYPE = (
+        (PROFIT, PROFIT),
+        (EXPENSE, EXPENSE),
+    )
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='orders')
     status = models.CharField(max_length=20, choices=STATUS, default=IN_PROCESS)
     is_confirm = models.BooleanField(default=False)
+    type = models.CharField(max_length=20, choices=TYPE)
 
     def __str__(self):
         return f'{self.cart} - {self.status}'

@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from accounts.models import User
-from common.models import BaseModel
+from common.models import BaseModel, EXPENSE, PROFIT
 
 KG, PIECE = ('kg', _('dona'))
 APPROVED, NOT_APPROVED  = ('tasdiqlangan', 'tasdiqlanmagan')
@@ -15,7 +15,7 @@ class CategoryProduct(BaseModel):
 class Product(BaseModel):
     category = models.ForeignKey(CategoryProduct, on_delete=models.CASCADE, related_name='products')
     name = models.CharField(max_length=100)
-    price = models.DecimalField(max_digits=10, decimal_places=3, default=0.000)
+    price = models.PositiveIntegerField(default=0)
     image = models.ImageField(upload_to='product/product/image/%Y/%m/%d')
 
     def __str__(self):
@@ -29,7 +29,7 @@ class Product(BaseModel):
 
 class CartProduct(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cart_products')
-    total_price = models.DecimalField(max_digits=10, decimal_places=3, default=0.000)
+    total_price = models.PositiveIntegerField(default=0)
     is_confirm = models.BooleanField(default=False)
 
     def __str__(self):
@@ -65,9 +65,14 @@ class OrderProduct(BaseModel):
         (APPROVED, APPROVED),
         (NOT_APPROVED, NOT_APPROVED),
     )
+    TYPE = (
+        (PROFIT, PROFIT),
+        (EXPENSE, EXPENSE),
+    )
     cart = models.ForeignKey(CartProduct, on_delete=models.CASCADE, related_name='order_products')
     is_confirm = models.BooleanField(default=False)
-    status = models.CharField(max_length=50)
+    status = models.CharField(max_length=50, choices=STATUS)
+    type = models.CharField(max_length=250, choices=TYPE)
 
     def __str__(self):
         return f"{self.cart} - {self.is_confirm}"

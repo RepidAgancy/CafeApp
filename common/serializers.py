@@ -87,7 +87,7 @@ class CartItemCreateSerializer(serializers.Serializer):
                 'id': cart_item.cart.id,
                 'user': cart_item.cart.user.username,
                 'table': cart_item.cart.table.number,
-                'total_price': f'{cart_item.cart.total_price:.3f} UZS',
+                'total_price': f'{cart_item.cart.total_price} UZS',
             },
             'quantity': cart_item.quantity,
         }
@@ -133,7 +133,7 @@ class CartItemSerializer(serializers.ModelSerializer):
         ]
 
     def get_price(self, obj):
-        return f'{obj.food.price:.3f} UZS'
+        return f'{obj.food.price} UZS'
 
 
 class CartSerializer(serializers.ModelSerializer):
@@ -155,13 +155,13 @@ class OrderCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Order
         fields = [
-            'id', 'cart', 'status',
+            'id', 'cart',
         ]
         extra_kwargs = {'id': {'read_only': True}}
 
     def create(self, validated_data):
         order = models.Order.objects.create(
-            cart=validated_data['cart'], status=validated_data['status']
+            cart=validated_data['cart'], status=models.IN_PROCESS
         )
         cart = order.cart
         return {
@@ -212,7 +212,7 @@ class OrderListSerializer(serializers.ModelSerializer):
 
     def get_total_price(self, obj):
         total_price = obj.cart.total_price
-        return f"{total_price:.3f} UZS"
+        return f"{total_price} UZS"
 
 
 

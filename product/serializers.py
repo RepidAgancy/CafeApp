@@ -1,5 +1,3 @@
-from itertools import product
-
 from rest_framework import serializers
 
 from product import models
@@ -13,7 +11,7 @@ class ProductCategoryListSerializer(serializers.ModelSerializer):
 class ProductListSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Product
-        fields = ['id', 'name', 'image', 'price']
+        fields = ['id', 'name_uz', 'name_ru', 'name_en', 'image', 'price']
 
 
 class ProductCartItemCreateSerializer(serializers.ModelSerializer):
@@ -102,7 +100,7 @@ class ProductCartItemSerializer(serializers.ModelSerializer):
         fields = ['product', 'weight', 'unit_status', 'date', 'time', 'price']
 
     def get_price(self, obj):
-        return f'{obj.product.price:.3f} uzs'
+        return f'{obj.product.price} uzs'
 
 
 class ProductCartSerializer(serializers.ModelSerializer):
@@ -135,13 +133,14 @@ class ProductOrderCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         cart = models.CartProduct.objects.get(pk=validated_data['cart'])
-        order = models.OrderProduct.objects.create(cart=cart, status=models.NOT_APPROVED)
+        order = models.OrderProduct.objects.create(cart=cart, status=models.NOT_APPROVED, type=models.EXPENSE)
         cart.is_confirm = True
         cart.save()
         return {
             'id': f'#{order.id}',
             'cart': ProductCartSerializer(order.cart).data,
-            # 'date': order.
+            'date': order.created_at.date,
+            'time': order.created_at.time,
             'storekeeper': order.cart.user,
             'total_price': order.cart.total_price,
         }
@@ -181,7 +180,7 @@ class ProductOrderListSerializer(serializers.ModelSerializer):
         return ProductCartSerializer(obj.cart).data
 
     def get_total_price(self, obj):
-        return f'{obj.cart.total_price:.3f} uzs'
+        return f'{obj.cart.total_price} uzs'
 
 
 class ProductCreateSerializer(serializers.Serializer):

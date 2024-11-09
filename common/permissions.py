@@ -1,15 +1,10 @@
-from django.contrib.auth.models import AnonymousUser
-from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import BasePermission
 
 from accounts import models
 
 class IsWaiter(BasePermission):
     def has_permission(self, request, view):
-        # user = request.user
-        # if isinstance(user, AnonymousUser):
-        #     raise ValidationError('You are not logged in')
-        if request.user.is_authenticated and request.user.type == models.WAITER:
+        if request.user.is_authenticated and request.user.type == models.WAITER or request.user.profession.name_en == 'waiter':
             return True
         else:
             return False
@@ -17,10 +12,7 @@ class IsWaiter(BasePermission):
 
 class IsCashier(BasePermission):
     def has_permission(self, request, view):
-        # user = request.user
-        # if isinstance(user, AnonymousUser):
-        #     raise ValidationError('You are not logged in')
-        if request.user.is_authenticated and request.user.type == models.CASHIER:
+        if request.user.is_authenticated and request.user.type == models.CASHIER or request.user.profession.name_en == 'cashier':
             return True
         else:
             return False
