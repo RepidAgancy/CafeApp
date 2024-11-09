@@ -4,6 +4,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from accounts import serializers
 
 class LogOutView(generics.GenericAPIView):
+    """
+    Bu Api Refresh token qabul qiladi va Tokenni blacklistga qoshib qoyadi
+    """
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = serializers.LogoutSerializer
 
