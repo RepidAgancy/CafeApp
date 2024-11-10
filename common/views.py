@@ -10,12 +10,12 @@ from common import models, serializers, permissions, filters
 class TableListApiView(generics.ListAPIView):
     serializer_class = serializers.TableListSerializer
     queryset = models.Table.objects.all()
-    permission_classes = [permissions.IsWaiter or permissions.IsCashier]
+    permission_classes = [permissions.IsCashierOrWaiter]
 
 
 class TableGetApiView(generics.GenericAPIView):
     serializer_class = serializers.TableGetSerializer
-    permission_classes = [permissions.IsWaiter or permissions.IsCashier]
+    permission_classes = [permissions.IsCashierOrWaiter]
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data, context={'request': request})
@@ -28,21 +28,21 @@ class TableGetApiView(generics.GenericAPIView):
 class FoodListApiView(generics.ListAPIView):
     serializer_class = serializers.FoodListSerializer
     queryset = models.Food.objects.all()
-    permission_classes = [permissions.IsWaiter or permissions.IsCashier]
+    permission_classes = [permissions.IsCashierOrWaiter]
     filter_backends = [DjangoFilterBackend]
     filterset_class = filters.FoodFilter
 
 
 class FoodDetailApiView(generics.RetrieveAPIView):
     serializer_class = serializers.FoodDetailSerializer
-    permission_classes = [permissions.IsWaiter or permissions.IsCashier]
+    permission_classes = [permissions.IsCashierOrWaiter]
     queryset = models.Food.objects.all()
     lookup_field = 'id'
 
 
 class CartItemCreateApiView(generics.GenericAPIView):
     serializer_class = serializers.CartItemCreateSerializer
-    permission_classes = [permissions.IsWaiter or permissions.IsCashier]
+    permission_classes = [permissions.IsCashierOrWaiter]
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -54,7 +54,7 @@ class CartItemCreateApiView(generics.GenericAPIView):
 
 class CartItemEditApiView(generics.GenericAPIView):
     serializer_class = serializers.CartItemUpdateSerializer
-    permission_classes = [permissions.IsWaiter or permissions.IsCashier]
+    permission_classes = [permissions.IsCashierOrWaiter]
     queryset = models.CartItem.objects.all()
 
     def patch(self, request, cart_item_id, *args, **kwargs):
@@ -67,7 +67,7 @@ class CartItemEditApiView(generics.GenericAPIView):
 
 class CartItemDeleteApiView(generics.GenericAPIView):
     serializer_class = serializers.CartItemUpdateSerializer
-    permission_classes = [permissions.IsWaiter or permissions.IsCashier]
+    permission_classes = [permissions.IsCashierOrWaiter]
     queryset = models.CartItem.objects.all()
 
     def delete(self, request, cart_item_id, *args, **kwargs):
@@ -90,12 +90,12 @@ class CartDetailApiView(generics.RetrieveAPIView):
     serializer_class = serializers.CartSerializer
     queryset = models.Cart.objects.all()
     lookup_field = 'id'
-    permission_classes = [permissions.IsWaiter or permissions.IsCashier]
+    permission_classes = [permissions.IsCashierOrWaiter]
 
 
 class OrderCreateApiView(generics.GenericAPIView):
     serializer_class = serializers.OrderCreateSerializer
-    permission_classes = [permissions.IsWaiter or permissions.IsCashier]
+    permission_classes = [permissions.IsCashierOrWaiter]
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -107,7 +107,7 @@ class OrderCreateApiView(generics.GenericAPIView):
 
 class OrderConfirmedApiView(generics.GenericAPIView):
     serializer_class = serializers.OrderConfirmedSerializer
-    permission_classes = [permissions.IsWaiter or permissions.IsCashier]
+    permission_classes = [permissions.IsCashierOrWaiter]
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -119,7 +119,7 @@ class OrderConfirmedApiView(generics.GenericAPIView):
 
 class OrderListInProcessApiView(generics.GenericAPIView):
     serializer_class = serializers.OrderListSerializer
-    permission_classes = [permissions.IsWaiter or permissions.IsCashier]
+    permission_classes = [permissions.IsCashierOrWaiter]
 
     def get(self, request):
         order = models.Order.objects.filter(status=models.IN_PROCESS)
@@ -129,7 +129,7 @@ class OrderListInProcessApiView(generics.GenericAPIView):
 
 class OrderListIsDoneApiView(generics.GenericAPIView):
     serializer_class = serializers.OrderListSerializer
-    permission_classes = [permissions.IsWaiter or permissions.IsCashier]
+    permission_classes = [permissions.IsCashierOrWaiter]
 
     def get(self, request):
         order = models.Order.objects.filter(status=models.DONE)

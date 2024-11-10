@@ -37,5 +37,8 @@ class User(AbstractUser, BaseModel):
     def __str__(self):
         return self.username
 
+    @classmethod
+    def get_user_type_list(cls):
+        return [choice[1] for choice in cls.USER_TYPE]
 
 

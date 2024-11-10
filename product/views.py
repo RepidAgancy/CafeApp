@@ -1,7 +1,8 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status, views
 from rest_framework.response import Response
 
-from product import models, serializers, permissions
+from product import models, serializers, permissions, filters
 
 class ProductCategoryListApiView(generics.ListAPIView):
     serializer_class = serializers.ProductCategoryListSerializer
@@ -13,6 +14,8 @@ class ProductCategoryListApiView(generics.ListAPIView):
 class ProductListApiView(generics.ListAPIView):
     serializer_class = serializers.ProductListSerializer
     queryset = models.Product.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = filters.ProductFilter
     permission_classes = [permissions.IsStorekeeper, ]
 
 

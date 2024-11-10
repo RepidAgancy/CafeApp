@@ -4,7 +4,7 @@ from accounts import models
 
 class IsWaiter(BasePermission):
     def has_permission(self, request, view):
-        if request.user.is_authenticated and request.user.type == models.WAITER or request.user.profession.name_en == 'waiter':
+        if request.user.is_authenticated and request.user.type == models.WAITER:
             return True
         else:
             return False
@@ -12,7 +12,14 @@ class IsWaiter(BasePermission):
 
 class IsCashier(BasePermission):
     def has_permission(self, request, view):
-        if request.user.is_authenticated and request.user.type == models.CASHIER or request.user.profession.name_en == 'cashier':
+        if request.user.is_authenticated and request.user.type == models.CASHIER:
             return True
         else:
             return False
+
+
+class IsCashierOrWaiter(BasePermission):
+    def has_permission(self, request, view):
+        if request.user.is_authenticated and request.user.type == models.CASHIER or request.user.type == models.WAITER:
+            return True
+        return False
