@@ -4,6 +4,9 @@ from django.urls import path
 from common import views
 
 urlpatterns = [
+    # food category list
+    path('category/list/', views.FoodCategoryListApiView.as_view(), name='food_category_list'),
+    path('category/<category_id>/', views.FoodListByCategoryApiView.as_view(), name='food_category_list'),
     # table
     path('table/list/', views.TableListApiView.as_view(), name='tables'),
     path('table/choose/', views.TableGetApiView.as_view(), name='table-get'),

@@ -55,6 +55,22 @@ class FoodDetailSerializer(serializers.ModelSerializer):
         ]
 
 
+class FoodCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.CategoryFood
+        fields = [
+            'id', 'name_uz', 'name_ru', 'name_en', 'image'
+        ]
+
+
+class FoodListByCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Food
+        fields = [
+            'id', 'name_uz', 'name_ru', 'name_en', 'image', 'price'
+        ]
+
+
 class CartItemCreateSerializer(serializers.Serializer):
     food_id = serializers.IntegerField()
     quantity = serializers.IntegerField()
@@ -165,6 +181,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         )
         cart = order.cart
         return {
+            'order_id': order.id,
             'status': order.status,
             'created_at': order.created_at,
             'cart': CartSerializer(order.cart).data,
@@ -189,6 +206,8 @@ class OrderConfirmedSerializer(serializers.Serializer):
         order = models.Order.objects.get(id=self.validated_data['order_id'])
         order.is_confirm = True
         order.status = models.DONE
+        order.cart.table.type = models.DONE
+        order.cart.table.save()
         order.save()
 
         return {

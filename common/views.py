@@ -40,6 +40,26 @@ class FoodDetailApiView(generics.RetrieveAPIView):
     lookup_field = 'id'
 
 
+class FoodCategoryListApiView(generics.ListAPIView):
+    queryset = models.CategoryFood.objects.all()
+    serializer_class = serializers.FoodCategorySerializer
+    permission_classes = [permissions.IsCashierOrWaiter]
+
+
+class FoodListByCategoryApiView(generics.GenericAPIView):
+    permission_classes = [permissions.IsCashierOrWaiter]
+    serializer_class = serializers.FoodListByCategorySerializer
+
+    def get(self, request, category_id):
+        try:
+            category = models.CategoryFood.objects.get(id=category_id)
+        except models.CategoryFood.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        foods = models.Food.objects.filter(category=category)
+        serializer = self.get_serializer(foods, many=True)
+        return Response(serializer.data)
+
+
 class CartItemCreateApiView(generics.GenericAPIView):
     serializer_class = serializers.CartItemCreateSerializer
     permission_classes = [permissions.IsCashierOrWaiter]
@@ -145,7 +165,7 @@ class FinishDayApiView(views.APIView):
         today = timezone.now().date()
         last_day_orders = models.Order.objects.filter(created_at__date=today, status=models.DONE, cart__user=user)
         orders = serializers.OrderListSerializer(last_day_orders, many=True).data
-        total_price = 0.000
+        total_price = 0
         for order in orders:
             total_price += float(order['cart']['total_price'])
         ofitsant_kpi = (total_price / 100) * 10
