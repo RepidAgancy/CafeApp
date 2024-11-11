@@ -41,8 +41,3 @@ class UserAdmin(UserAdmin):
     search_fields = ("username", "first_name", "last_name", "email")
     ordering = ("username",)
 
-
-@admin.register(models.Profession)
-class ProfessionAdmin(TranslationAdmin):
-    list_display = ['id', 'name']
-    list_display_links = list_display

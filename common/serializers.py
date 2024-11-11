@@ -190,7 +190,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         }
 
 
-class OrderConfirmedSerializer(serializers.Serializer):
+class OrderChangeStatusSerializer(serializers.Serializer):
     order_id = serializers.IntegerField()
 
     def validate(self, data):
@@ -204,14 +204,13 @@ class OrderConfirmedSerializer(serializers.Serializer):
 
     def save(self, *args, **kwargs):
         order = models.Order.objects.get(id=self.validated_data['order_id'])
-        order.is_confirm = True
         order.status = models.DONE
         order.cart.table.type = models.DONE
         order.cart.table.save()
         order.save()
 
         return {
-            'message': 'Order is successfully confirmed'
+            'message': 'Order status successfully changed'
         }
 
 
@@ -234,5 +233,23 @@ class OrderListSerializer(serializers.ModelSerializer):
         return f"{total_price} UZS"
 
 
+class OrderFoodConfirmSerializer(serializers.Serializer):
+    order_id = serializers.IntegerField()
 
+    def validate(self, data):
+        try:
+            order = models.Order.objects.get(id=data['order_id'])
+        except models.Order.DoesNotExist:
+            raise serializers.ValidationError({'message': 'Order not found'})
+        if order.is_confirm:
+            raise serializers.ValidationError({'message': 'Order is confirmed'})
+        return data
 
+    def save(self, *args, **kwargs):
+        order = models.Order.objects.get(id=self.validated_data['order_id'])
+        order.is_confirm = True
+        order.save()
+
+        return {
+            'message': 'Order is successfully confirmed'
+        }

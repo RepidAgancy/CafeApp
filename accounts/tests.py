@@ -1,10 +1,6 @@
-import jwt
-from PIL.Image import register_extension
-
 from django.urls import reverse
 from rest_framework.test import APITestCase
 from rest_framework import status
-from django.conf import settings
 
 from accounts import models
 
@@ -48,9 +44,6 @@ class UserLogout(APITestCase):
         self.user_login = reverse('login')
         self.user_logout = reverse('logout')
 
-    # def test_user_logout(self):
-    #
-    #     response =
 
 
 

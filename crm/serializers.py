@@ -1,9 +1,8 @@
 from django.contrib.auth.hashers import make_password
-from django.db.models.base import method_set_order
 from rest_framework import serializers
 
 from common import models as common_models
-from accounts.models import User, Profession
+from accounts.models import User
 from crm import models
 from product.models import Product
 

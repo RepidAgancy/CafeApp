@@ -126,7 +126,7 @@ class OrderCreateApiView(generics.GenericAPIView):
 
 
 class OrderConfirmedApiView(generics.GenericAPIView):
-    serializer_class = serializers.OrderConfirmedSerializer
+    serializer_class = serializers.OrderChangeStatusSerializer
     permission_classes = [permissions.IsCashierOrWaiter]
 
     def post(self, request):
@@ -142,7 +142,7 @@ class OrderListInProcessApiView(generics.GenericAPIView):
     permission_classes = [permissions.IsCashierOrWaiter]
 
     def get(self, request):
-        order = models.Order.objects.filter(status=models.IN_PROCESS)
+        order = models.Order.objects.filter(status=models.IN_PROCESS, cart__user=request.user)
         serializer = self.get_serializer(order, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -152,7 +152,7 @@ class OrderListIsDoneApiView(generics.GenericAPIView):
     permission_classes = [permissions.IsCashierOrWaiter]
 
     def get(self, request):
-        order = models.Order.objects.filter(status=models.DONE)
+        order = models.Order.objects.filter(status=models.DONE, cart__user=request.user)
         serializer = self.get_serializer(order, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -163,18 +163,48 @@ class FinishDayApiView(views.APIView):
     def post(self, request):
         user = request.user
         today = timezone.now().date()
-        last_day_orders = models.Order.objects.filter(created_at__date=today, status=models.DONE, cart__user=user)
-        orders = serializers.OrderListSerializer(last_day_orders, many=True).data
-        total_price = 0
-        for order in orders:
-            total_price += float(order['cart']['total_price'])
-        ofitsant_kpi = (total_price / 100) * 10
-        data = {
-            "user": user.id,
-            "orders": orders,
-            'total_price': f'{total_price:.3f} UZS',
-            'ofitsant_kpi': f'{ofitsant_kpi:.3f} UZS',
-        }
-        return Response(data)
+        orders = models.Order.objects.filter(user=user, status=models.IN_PROCESS)
+        if not orders.exists():
+            last_day_orders = models.Order.objects.filter(created_at__date=today, status=models.DONE, cart__user=user)
+            orders = serializers.OrderListSerializer(last_day_orders, many=True).data
+            total_price = 0
+            for order in orders:
+                total_price += float(order['cart']['total_price'])
+            ofitsant_kpi = (total_price / 100) * 10
+            data = {
+                "user": user.id,
+                "orders": orders,
+                'total_price': f'{total_price:.3f} UZS',
+                'ofitsant_kpi': f'{ofitsant_kpi:.3f} UZS',
+            }
+            return Response(data)
+        else:
+            return Response({'message': 'Waiter orders in process'}, status=status.HTTP_400_BAD_REQUEST)
 
 
+class OrderConfirmApiView(generics.GenericAPIView):
+    serializer_class = serializers.OrderFoodConfirmSerializer
+    permission_classes = [permissions.IsCashier]
+
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            result = serializer.save()
+            return Response(result, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrderIsConfirmListApiView(generics.ListAPIView):
+    permission_classes = [permissions.IsCashier]
+    serializer_class = serializers.OrderListSerializer
+
+    def get_queryset(self):
+        return models.Order.objects.filter(cart__user=self.request.user, is_confirmed=True)
+
+
+class OrderIsNotConfirmListApiView(generics.ListAPIView):
+    permission_classes = [permissions.IsCashier]
+    serializer_class = serializers.OrderListSerializer
+
+    def get_queryset(self):
+        return models.Order.objects.filter(cart__user=self.request.user, is_confirmed=False)

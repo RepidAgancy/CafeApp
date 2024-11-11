@@ -1,8 +1,20 @@
+from rest_framework.response import Response
 from rest_framework import response, generics, status, permissions, views
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from accounts import serializers
-from accounts.models import Profession, User
+from accounts.models import User
+
+
+class LoginApiView(generics.GenericAPIView):
+    permission_classes = (permissions.AllowAny,)
+    serializer_class = serializers.LoginSerializer
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            return Response(serializer.save(), status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogOutView(generics.GenericAPIView):
@@ -22,17 +34,18 @@ class LogOutView(generics.GenericAPIView):
             return response.Response({"message":f"Error occured {e}"})
 
 
-class ProfessionListAPIView(generics.ListAPIView):
-    serializer_class = serializers.ProfessionListSerializer
-    queryset = Profession.objects.all()
-    permission_classes = (permissions.AllowAny,)
-
-
 class UserTypeListApiView(views.APIView):
     def get(self, request):
         data = {
             'user_type': User.get_user_type_list()
         }
         return response.Response(data)
+
+
+class UserProfileView(generics.RetrieveAPIView):
+    permission_classes = (permissions.IsAuthenticated)
+    serializer_class = serializers.UserProfileSerializer
+    queryset = User.objects.all()
+    lookup_field = 'id'
 
 
