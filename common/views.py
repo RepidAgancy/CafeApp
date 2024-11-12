@@ -28,7 +28,6 @@ class TableGetApiView(generics.GenericAPIView):
 class FoodListApiView(generics.ListAPIView):
     serializer_class = serializers.FoodListSerializer
     queryset = models.Food.objects.all()
-    permission_classes = [permissions.IsCashierOrWaiter]
     filter_backends = [DjangoFilterBackend]
     filterset_class = filters.FoodFilter
 
@@ -163,7 +162,7 @@ class FinishDayApiView(views.APIView):
     def post(self, request):
         user = request.user
         today = timezone.now().date()
-        orders = models.Order.objects.filter(user=user, status=models.IN_PROCESS)
+        orders = models.Order.objects.filter(cart__user=user, status=models.IN_PROCESS)
         if not orders.exists():
             last_day_orders = models.Order.objects.filter(created_at__date=today, status=models.DONE, cart__user=user)
             orders = serializers.OrderListSerializer(last_day_orders, many=True).data
