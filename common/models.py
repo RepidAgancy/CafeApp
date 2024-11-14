@@ -1,8 +1,9 @@
+from email.policy import default
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
-BUSY, NOT_BUSY = (_('band'), _('band emas'))
 IN_PROCESS, DONE = (_('jarayonda'), _('bajarildi'))
 PROFIT, EXPENSE = (_('kirim'), _('chiqim'))
 
@@ -15,12 +16,8 @@ class BaseModel(models.Model):
 
 
 class Table(BaseModel):
-    TYPE = (
-        (BUSY, BUSY),
-        (NOT_BUSY, NOT_BUSY),
-    )
     number = models.PositiveIntegerField(unique=True, default=0)
-    type = models.CharField(max_length=20, choices=TYPE, default=NOT_BUSY)
+    is_busy = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.number} - stol'

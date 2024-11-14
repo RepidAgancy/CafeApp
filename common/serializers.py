@@ -7,7 +7,7 @@ class TableListSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Table
         fields = [
-            'id', 'number', 'type',
+            'id', 'number', 'is_busy',
         ]
 
 
@@ -19,13 +19,13 @@ class TableGetSerializer(serializers.Serializer):
             table = models.Table.objects.get(id=data['table_id'])
         except models.Table.DoesNotExist:
             raise serializers.ValidationError({'message': 'Table not found'})
-        if table.type == models.BUSY:
+        if table.is_busy == True:
             raise serializers.ValidationError({'message': 'Table is busy'})
         return data
 
     def save(self):
         table = models.Table.objects.get(id=self.validated_data['table_id'])
-        table.type = models.BUSY
+        table.is_busy = True
         table.save()
         cart = models.Cart.objects.create(
             table=table,
