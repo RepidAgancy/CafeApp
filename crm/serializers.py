@@ -51,6 +51,13 @@ class EmployeeUpdateSerializer(serializers.ModelSerializer):
             'first_name', 'last_name', 'email', 'phone_number', 'salary', 'type', 'work_experience','profile_image', 'username', 'password',
         ]
 
+class FoodCategoryListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = common_models.CategoryFood
+        fields = [
+            'id', 'name', 'image'
+        ]
+
 
 class FoodSerializer(serializers.ModelSerializer):
     class Meta:

@@ -17,6 +17,7 @@ urlpatterns = [
     path('food/<int:pk>/', views.FoodDeleteApiView.as_view(), name='food-delete'),
     path('food/create/', views.FoodCreateApiView.as_view(), name='food-create'),
     path('food/<int:pk>/update/', views.FoodUpdateApiView.as_view(), name='food-update'),
+    path('food/category-list/', views.FoodCategoryListView.as_view(), name='food-category-list'),
     # product
     path('product/list/', views.ProductListApiView.as_view(), name='product-list'),
     # payment

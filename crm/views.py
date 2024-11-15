@@ -10,7 +10,7 @@ from crm import serializers, models, permissions
 from crm.utils import calculate_percentage_change
 from crm.pagination import CustomPagination
 from product.models import OrderProduct, APPROVED, Product
-from common.models import Order, PROFIT, EXPENSE, DONE, Food
+from common.models import Order, PROFIT, EXPENSE, DONE, Food, CategoryFood
 from accounts.models import User, WAITER, CASHIER
 
 
@@ -161,6 +161,12 @@ class FoodListApiView(generics.ListAPIView):
     serializer_class = serializers.FoodSerializer
     queryset = Food.objects.all()
     permission_classes = (permissions.IsAdminUser,)
+
+
+class FoodCategoryListView(generics.ListAPIView):
+    serializer_class = serializers.FoodCategoryListSerializer
+    queryset = CategoryFood.objects.all()
+    permission_classes = (permissions.IsAdminUser, )
 
 
 class FoodCreateApiView(generics.CreateAPIView):
