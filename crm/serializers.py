@@ -68,11 +68,6 @@ class FoodSerializer(serializers.ModelSerializer):
 
 
 class FoodCreateUpdateSerializer(serializers.ModelSerializer):
-    category = serializers.SlugRelatedField(
-        queryset=common_models.CategoryFood.objects.all(),
-        slug_field='name'  # Specify the field to use for lookup
-    )
-    
     class Meta:
         model = common_models.Food
         fields = [
