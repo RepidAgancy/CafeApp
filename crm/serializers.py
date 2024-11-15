@@ -63,15 +63,20 @@ class FoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = common_models.Food
         fields = [
-            'id', 'name', 'image', 'price', 'category'
+            'id', 'name', 'image', 'price', 'category', 'food_info_uz', 'food_info_ru', 'food_info_en'
         ]
 
 
 class FoodCreateUpdateSerializer(serializers.ModelSerializer):
+    category = serializers.SlugRelatedField(
+        queryset=common_models.CategoryFood.objects.all(),
+        slug_field='name'  # Specify the field to use for lookup
+    )
+    
     class Meta:
         model = common_models.Food
         fields = [
-            'id', 'name', 'image', 'price', 'category', 'food_info',
+            'id', 'name', 'image', 'price', 'category', 'food_info_uz', 'food_info_ru', 'food_info_en' 
         ]
 
 

@@ -22,4 +22,5 @@ class IsCashierOrWaiter(BasePermission):
     def has_permission(self, request, view):
         if request.user.is_authenticated and request.user.type == models.CASHIER or request.user.type == models.WAITER:
             return True
-        return False
+        else:
+            return False

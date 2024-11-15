@@ -33,8 +33,8 @@ class CategoryFood(BaseModel):
         return f'{self.name}'
 
     class Meta:
-        verbose_name = _('kategoriya')
-        verbose_name_plural = _('kategoriylar')
+        verbose_name = _('kategoriya taom')
+        verbose_name_plural = _('kategoriylar taom')
 
 
 class Food(BaseModel):
