@@ -60,11 +60,16 @@ class FoodCategoryListSerializer(serializers.ModelSerializer):
 
 
 class FoodSerializer(serializers.ModelSerializer):
+    category = serializers.SerializerMethodField(method_name='get_category')
+
     class Meta:
         model = common_models.Food
         fields = [
             'id', 'name', 'image', 'price', 'category', 'food_info_uz', 'food_info_ru', 'food_info_en'
         ]
+
+    def get_category(self, obj):
+        return obj.category.name
 
 
 class FoodCreateUpdateSerializer(serializers.ModelSerializer):
