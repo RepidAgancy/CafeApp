@@ -43,7 +43,6 @@ class Food(BaseModel):
     price = models.PositiveIntegerField()
     category = models.ForeignKey(CategoryFood, on_delete=models.CASCADE, related_name='food')
     food_info = models.TextField()
-    food_composition = models.TextField()
 
     def __str__(self):
         return f'{self.name} - {self.price} UZS'

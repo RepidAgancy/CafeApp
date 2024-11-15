@@ -12,7 +12,7 @@ class ProductCategoryListApiView(generics.ListAPIView):
 
 
 class ProductListApiView(generics.ListAPIView):
-    serializer_class = serializers.ProductListSerializer
+    serializer_class = serializers.ProductCartItemSerializer
     queryset = models.Product.objects.all()
     filter_backends = [DjangoFilterBackend]
     filterset_class = filters.ProductFilter

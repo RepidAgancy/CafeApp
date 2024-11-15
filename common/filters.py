@@ -12,7 +12,5 @@ class FoodFilter(django_filters.FilterSet):
 
     def filter_search(self, queryset, name, value):
         return queryset.filter(
-            Q(name_uz__icontains=value) |
-            Q(name_ru__icontains=value) |
-            Q(name_en__icontains=value)
+            Q(name__icontains=value)
         )

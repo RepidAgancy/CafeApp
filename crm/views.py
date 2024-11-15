@@ -164,13 +164,13 @@ class FoodListApiView(generics.ListAPIView):
 
 
 class FoodCreateApiView(generics.CreateAPIView):
-    serializer_class = serializers.FoodSerializer
+    serializer_class = serializers.FoodCreateUpdateSerializer
     permission_classes = (permissions.IsAdminUser,)
     queryset = Food.objects.all()
 
 
 class FoodUpdateApiView(generics.UpdateAPIView):
-    serializer_class = serializers.FoodSerializer
+    serializer_class = serializers.FoodCreateUpdateSerializer
     permission_classes = (permissions.IsAdminUser,)
     queryset = Food.objects.all()
     lookup_field = 'pk'

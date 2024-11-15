@@ -19,7 +19,7 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'first_name', 'last_name', 'email', 'phone_number', 'salary', 'work_experience','profile_image', 'username', 'password',
+            'first_name', 'last_name', 'email', 'phone_number', 'salary', 'work_experience','profile_image', 'type', 'username', 'password',
         ]
 
     def create(self, validated_data):
@@ -27,6 +27,7 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             email=validated_data['email'],
+            type = validated_data['type'],
             phone_number=validated_data['phone_number'],
             profile_image = validated_data.get('profile_image',None),
             salary=validated_data['salary'],
@@ -47,7 +48,7 @@ class EmployeeUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'first_name', 'last_name', 'email', 'phone_number', 'salary', 'work_experience','profile_image', 'username', 'password',
+            'first_name', 'last_name', 'email', 'phone_number', 'salary', 'type', 'work_experience','profile_image', 'username', 'password',
         ]
 
 
@@ -55,7 +56,7 @@ class FoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = common_models.Food
         fields = [
-            'id', 'name_uz', 'name_ru', 'name_en', 'image', 'price', 'category'
+            'id', 'name', 'image', 'price', 'category'
         ]
 
 
@@ -63,7 +64,7 @@ class FoodCreateUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = common_models.Food
         fields = [
-            'id', 'name', 'image', 'price', 'category', 'food_info', 'food_composition'
+            'id', 'name', 'image', 'price', 'category', 'food_info',
         ]
 
 
