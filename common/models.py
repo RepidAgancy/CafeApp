@@ -27,7 +27,7 @@ class Table(BaseModel):
 
 class CategoryFood(BaseModel):
     image = models.ImageField(upload_to='common/category/image/%Y/%m/%d')
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return f'{self.name}'
