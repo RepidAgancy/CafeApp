@@ -17,7 +17,7 @@ class Payment(BaseModel):
     profession = models.CharField(max_length=250, null=True, blank=True)
     price = models.PositiveIntegerField(null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    category = models.CharField(max_length=250)
+    category = models.CharField(max_length=250, choices=CATEGORY)
 
     def __str__(self):
         return f'Tolov - {self.category}'

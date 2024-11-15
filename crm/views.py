@@ -8,6 +8,7 @@ from rest_framework.response import Response
 
 from crm import serializers, models, permissions
 from crm.utils import calculate_percentage_change
+from crm.pagination import CustomPagination
 from product.models import OrderProduct, APPROVED, Product
 from common.models import Order, PROFIT, EXPENSE, DONE, Food
 from accounts.models import User, WAITER, CASHIER
@@ -119,13 +120,11 @@ class ChartActivityIncomeApiView(views.APIView):
         }
         return Response(data)
 
-class EmployeesListApiView(views.APIView):
+class EmployeesListApiView(generics.ListAPIView):
     permission_classes = (permissions.IsAdminUser,)
-
-    def get(self, request):
-        employees = User.objects.all()
-        serializer = serializers.UserListSerializer(employees, many=True)
-        return Response(serializer.data)
+    queryset = User.objects.all()
+    serializer_class = serializers.UserListSerializer
+    pagination_class = CustomPagination
 
 
 class EmployeeDeleteApiView(views.APIView):

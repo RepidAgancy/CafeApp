@@ -42,10 +42,11 @@ class UserTypeListApiView(views.APIView):
         return response.Response(data)
 
 
-class UserProfileView(generics.RetrieveAPIView):
-    permission_classes = (permissions.IsAuthenticated, )
-    serializer_class = serializers.UserProfileSerializer
-    queryset = User.objects.all()
-    lookup_field = 'id'
+class UserProfileView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        user_serializer = serializers.UserProfileSerializer(instance=request.user)
+        return response.Response(user_serializer.data)
 
 

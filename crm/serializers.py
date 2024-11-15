@@ -11,7 +11,7 @@ class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'first_name', 'last_name', 'email', 'phone_number', 'salary', 'profession',
+            'id', 'first_name', 'last_name', 'email', 'phone_number','profile_image', 'work_experience', 'salary','type'
         ]
 
 
@@ -19,7 +19,7 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'first_name', 'last_name', 'email', 'phone_number', 'salary', 'work_experience', 'username', 'password',
+            'first_name', 'last_name', 'email', 'phone_number', 'salary', 'work_experience','profile_image', 'username', 'password',
         ]
 
     def create(self, validated_data):
@@ -28,6 +28,7 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
             last_name=validated_data['last_name'],
             email=validated_data['email'],
             phone_number=validated_data['phone_number'],
+            profile_image = validated_data.get('profile_image',None),
             salary=validated_data['salary'],
             work_experience=validated_data['work_experience'],
             username=validated_data['username'],
@@ -46,7 +47,7 @@ class EmployeeUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'first_name', 'last_name', 'email', 'phone_number', 'salary', 'work_experience', 'username', 'password',
+            'first_name', 'last_name', 'email', 'phone_number', 'salary', 'work_experience','profile_image', 'username', 'password',
         ]
 
 
@@ -114,4 +115,4 @@ class PaymentHistoryListSerializer(serializers.ModelSerializer):
         return obj.created_at.date() if obj.created_at else None
 
     def get_payment_type(self, obj):
-        return obj.category.name if obj.category else None
+        return obj.category if obj.category else None

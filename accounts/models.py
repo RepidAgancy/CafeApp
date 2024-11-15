@@ -15,7 +15,7 @@ class User(AbstractUser, BaseModel):
         (STOREKEEPER, STOREKEEPER),
     )
     type = models.CharField(max_length=50, choices=USER_TYPE)
-    profile_image = models.ImageField(upload_to='accounts/images/profile/%Y/%m/%d/')
+    profile_image = models.ImageField(upload_to='accounts/images/profile/%Y/%m/%d/',null=True, blank=True)
     phone_number = models.CharField(max_length=20, unique=True, null=True, blank=True)
     work_experience = models.CharField(max_length=250)
     salary = models.PositiveIntegerField(default=0)
