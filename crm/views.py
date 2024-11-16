@@ -174,7 +174,7 @@ class FoodCreateApiView(generics.GenericAPIView):
     permission_classes = (permissions.IsAdminUser,)
     queryset = Food.objects.all()
 
-    def create(self, request):
+    def post(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             result = serializer.save()
