@@ -93,7 +93,7 @@ class FoodCreateUpdateSerializer(serializers.ModelSerializer):
             food_info_en=validated_data['food_info_en'],
         )
         return {
-            'id': food.id, 'name': food.name, 'image': food.image, 'price': food.price, 'category': food.category.name, 'category_id': food.category_id, 'food_info_uz': food.food_info_uz,
+            'id': food.id, 'name': food.name, 'image': food.image.url, 'price': food.price, 'category': food.category.name, 'category_id': food.category_id, 'food_info_uz': food.food_info_uz,
         }
 
 
