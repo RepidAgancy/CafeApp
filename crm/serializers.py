@@ -66,7 +66,7 @@ class FoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = common_models.Food
         fields = [
-            'id', 'name', 'image', 'price', 'category', 'food_info_uz', 'food_info_ru', 'food_info_en'
+            'id', 'name', 'image', 'price', 'category', 'food_info_uz', 'food_info_ru', 'food_info_en', 'category_id'
         ]
 
     def get_category(self, obj):
