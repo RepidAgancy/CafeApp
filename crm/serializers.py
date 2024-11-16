@@ -82,6 +82,20 @@ class FoodCreateUpdateSerializer(serializers.ModelSerializer):
             'id', 'name', 'image', 'price', 'category', 'food_info_uz', 'food_info_ru', 'food_info_en'
         ]
 
+    def create(self, validated_data):
+        food = common_models.Food.objects.create(
+            name=validated_data['name'],
+            image=validated_data['image'],
+            price=validated_data['price'],
+            category=validated_data['category'],
+            food_info_uz=validated_data['food_info_uz'],
+            food_info_ru=validated_data['food_info_ru'],
+            food_info_en=validated_data['food_info_en'],
+        )
+        return {
+            'id': food.id, 'name': food.name, 'image': food.image, 'price': food.price, 'category': food.category.name, 'category_id': food.category_id, 'food_info_uz': food.food_info_uz,
+        }
+
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:

@@ -169,10 +169,17 @@ class FoodCategoryListView(generics.ListAPIView):
     permission_classes = (permissions.IsAdminUser, )
 
 
-class FoodCreateApiView(generics.CreateAPIView):
+class FoodCreateApiView(generics.GenericAPIView):
     serializer_class = serializers.FoodCreateUpdateSerializer
     permission_classes = (permissions.IsAdminUser,)
     queryset = Food.objects.all()
+
+    def create(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            result = serializer.save()
+            return Response(result, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class FoodUpdateApiView(generics.UpdateAPIView):
