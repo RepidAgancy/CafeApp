@@ -3,7 +3,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status, views
 from rest_framework.response import Response
 
-
+from crm.pagination import CustomPagination
 from common import models, serializers, permissions, filters
 
 
@@ -45,16 +45,36 @@ class FoodCategoryListApiView(generics.ListAPIView):
     permission_classes = [permissions.IsCashierOrWaiter]
 
 
+# class FoodListByCategoryApiView(generics.GenericAPIView):
+#     permission_classes = [permissions.IsCashierOrWaiter]
+#     serializer_class = serializers.FoodListByCategorySerializer
+
+#     def get(self, request, category_id):
+#         try:
+#             category = models.CategoryFood.objects.get(id=category_id)
+#         except models.CategoryFood.DoesNotExist:
+#             return Response(status=status.HTTP_404_NOT_FOUND)
+#         foods = models.Food.objects.filter(category=category)
+#         serializer = self.get_serializer(foods, many=True)
+#         return Response(serializer.data)
 class FoodListByCategoryApiView(generics.GenericAPIView):
     permission_classes = [permissions.IsCashierOrWaiter]
     serializer_class = serializers.FoodListByCategorySerializer
+    pagination_class = CustomPagination  # Set your custom pagination class
 
     def get(self, request, category_id):
         try:
             category = models.CategoryFood.objects.get(id=category_id)
         except models.CategoryFood.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
+
         foods = models.Food.objects.filter(category=category)
+
+        page = self.paginate_queryset(foods)  # Apply pagination to the queryset
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)  # Return paginated response
+
         serializer = self.get_serializer(foods, many=True)
         return Response(serializer.data)
 

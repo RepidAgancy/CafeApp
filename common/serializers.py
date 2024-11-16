@@ -66,7 +66,7 @@ class FoodListByCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Food
         fields = [
-            'id', 'name', 'image', 'price'
+            'id', 'name', 'image', 'price',
         ]
 
 
