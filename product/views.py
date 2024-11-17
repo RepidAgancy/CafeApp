@@ -9,6 +9,7 @@ class ProductCategoryListApiView(generics.ListAPIView):
     serializer_class = serializers.ProductCategoryListSerializer
     queryset = models.CategoryProduct.objects.all()
     permission_classes = [permissions.IsStorekeeper, ]
+    pagination_class = None
 
 
 class ProductListApiView(generics.ListAPIView):
@@ -17,6 +18,7 @@ class ProductListApiView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = filters.ProductFilter
     permission_classes = [permissions.IsStorekeeper, ]
+    pagination_class = None
 
 
 class GetOrderApiView(views.APIView):
@@ -96,12 +98,14 @@ class ProductOrderIsConfirmApiView(generics.ListAPIView):
     serializer_class = serializers.ProductOrderListSerializer
     permission_classes = [permissions.IsStorekeeper, ]
     queryset = models.OrderProduct.objects.filter(is_confirm=True)
+    pagination_class = None
 
 
 class ProductOrderIsNotConfirmApiView(generics.ListAPIView):
     serializer_class = serializers.ProductOrderListSerializer
     permission_classes = [permissions.IsStorekeeper, ]
     queryset = models.OrderProduct.objects.filter(is_confirm=False)
+    pagination_class = None
 
 
 class ProductCreateApiView(generics.GenericAPIView):
