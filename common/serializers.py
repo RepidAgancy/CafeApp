@@ -140,15 +140,23 @@ class CartItemUpdateSerializer(serializers.ModelSerializer):
 
 class CartItemSerializer(serializers.ModelSerializer):
     price = serializers.SerializerMethodField(method_name='get_price')
+    food_name = serializers.SerializerMethodField(method_name='get_food_name')
+    food_image = serializers.SerializerMethodField(method_name='get_food_image')
 
     class Meta:
         model = models.CartItem
         fields = [
-            'id', 'food', 'quantity', 'price'
+            'id', 'food', 'quantity', 'price', 'food_name', 'food_image'
         ]
 
     def get_price(self, obj):
         return f'{obj.food.price} UZS'
+
+    def get_food_name(self, obj):
+        return obj.food.name
+
+    def get_food_image(self, obj):
+        return obj.food.image
 
 
 class CartSerializer(serializers.ModelSerializer):
