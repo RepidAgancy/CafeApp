@@ -77,8 +77,12 @@ class FoodSerializer(serializers.ModelSerializer):
 
     def get_category_id(self, obj):
         return obj.category.id
+    
 
 class FoodCreateUpdateSerializer(serializers.ModelSerializer):
+    food_info_uz = serializers.CharField(required=False)
+    food_info_ru = serializers.CharField(required=False)
+    
     class Meta:
         model = common_models.Food
         fields = [
