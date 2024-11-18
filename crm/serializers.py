@@ -69,7 +69,7 @@ class FoodSerializer(serializers.ModelSerializer):
     class Meta:
         model = common_models.Food
         fields = [
-            'id', 'name', 'image', 'price', 'category', 'category_id', 'food_info_uz', 'food_info_ru', 'food_info_en'
+            'id', 'name', 'image', 'price', 'category', 'category_id', 'food_info', 'food_info_uz', 'food_info_ru', 'food_info_en'
         ]
 
     def get_category(self, obj):
@@ -101,7 +101,7 @@ class FoodCreateUpdateSerializer(serializers.ModelSerializer):
             food_info_en=validated_data.get('food_info_en', None),
         )
         return {
-            'id': food.id, 'name': food.name, 'image': food.image.url, 'price': food.price, 'category': food.category.name, 'category_id': food.category_id, 'food_info_uz': food.food_info_uz,
+            'id': food.id, 'name': food.name, 'image': food.image.url, 'price': food.price, 'category': food.category.name, 'category_id': food.category_id, 'food_info': food.food_info,
         }
 
 
