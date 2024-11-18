@@ -156,7 +156,7 @@ class CartItemSerializer(serializers.ModelSerializer):
         return obj.food.name
 
     def get_food_image(self, obj):
-        return obj.food.image
+        return obj.food.image.url
 
 
 class CartSerializer(serializers.ModelSerializer):
