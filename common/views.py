@@ -11,7 +11,7 @@ class TableListApiView(generics.ListAPIView):
     serializer_class = serializers.TableListSerializer
     queryset = models.Table.objects.all()
     permission_classes = [permissions.IsCashierOrWaiter]
-
+    pagination_class = None
 
 class TableGetApiView(generics.GenericAPIView):
     serializer_class = serializers.TableGetSerializer
@@ -30,6 +30,7 @@ class FoodListApiView(generics.ListAPIView):
     queryset = models.Food.objects.all()
     filter_backends = [DjangoFilterBackend]
     filterset_class = filters.FoodFilter
+    pagination_class = None
 
 
 class FoodDetailApiView(generics.RetrieveAPIView):
@@ -43,12 +44,13 @@ class FoodCategoryListApiView(generics.ListAPIView):
     queryset = models.CategoryFood.objects.all()
     serializer_class = serializers.FoodCategorySerializer
     permission_classes = [permissions.IsCashierOrWaiter]
+    pagination_class = None
 
 
 class FoodListByCategoryApiView(generics.GenericAPIView):
     permission_classes = [permissions.IsCashierOrWaiter]
     serializer_class = serializers.FoodListByCategorySerializer
-    pagination_class = CustomPagination  # Set your custom pagination class
+    pagination_class = None
 
     def get(self, request, category_id):
         try:
@@ -147,6 +149,7 @@ class OrderConfirmedApiView(generics.GenericAPIView):
 class OrderListInProcessApiView(generics.GenericAPIView):
     serializer_class = serializers.OrderListSerializer
     permission_classes = [permissions.IsCashierOrWaiter]
+    pagination_class = None
 
     def get(self, request):
         order = models.Order.objects.filter(status=models.IN_PROCESS, cart__user=request.user)
@@ -157,6 +160,7 @@ class OrderListInProcessApiView(generics.GenericAPIView):
 class OrderListIsDoneApiView(generics.GenericAPIView):
     serializer_class = serializers.OrderListSerializer
     permission_classes = [permissions.IsCashierOrWaiter]
+    pagination_class = None
 
     def get(self, request):
         order = models.Order.objects.filter(status=models.DONE, cart__user=request.user)
@@ -204,6 +208,7 @@ class OrderConfirmApiView(generics.GenericAPIView):
 class OrderIsConfirmListApiView(generics.ListAPIView):
     permission_classes = [permissions.IsCashier]
     serializer_class = serializers.OrderListSerializer
+    pagination_class = None
 
     def get_queryset(self):
         return models.Order.objects.filter(cart__user=self.request.user, is_confirmed=True)
@@ -212,6 +217,7 @@ class OrderIsConfirmListApiView(generics.ListAPIView):
 class OrderIsNotConfirmListApiView(generics.ListAPIView):
     permission_classes = [permissions.IsCashier]
     serializer_class = serializers.OrderListSerializer
+    pagination_class = None
 
     def get_queryset(self):
         return models.Order.objects.filter(cart__user=self.request.user, is_confirmed=False)
