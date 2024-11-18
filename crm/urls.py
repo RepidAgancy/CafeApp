@@ -4,6 +4,7 @@ from crm import views
 
 
 urlpatterns = [
+    path('search/', views.SearchAPIView.as_view(), name='search'),
     path('statistics/', views.StatisticsApiView.as_view(), name='statistics'),
     path('statistics/monthly/', views.MonthlyStatisticsAPIView.as_view(), name='monthly_statistics'),
     path('statistics/chart-activity/', views.ChartActivityIncomeApiView.as_view(), name='chart_activity_income'),

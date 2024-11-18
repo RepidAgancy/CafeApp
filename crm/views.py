@@ -2,6 +2,8 @@ from datetime import timedelta
 from django.db.models import Sum
 from django.db.models.functions import ExtractMonth
 from django.utils import timezone
+from django.db.models import Q
+from django.utils.translation import get_language
 
 from rest_framework import generics, views, status
 from rest_framework.response import Response
@@ -119,6 +121,42 @@ class ChartActivityIncomeApiView(views.APIView):
             },
         }
         return Response(data)
+
+
+class SearchAPIView(generics.GenericAPIView):
+    serializer_class = serializers.SearchSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)  
+        
+        query = serializer.validated_data.get('query', '')
+        
+
+        employees = User.objects.filter(Q(username__icontains=query) | 
+                                        Q(first_name__icontains=query)|
+                                        Q(last_name__icontains=query))
+        
+        current_language = get_language()
+        foods = Food.objects.filter(
+            Q(name__icontains = query) |
+            Q(**{f'food_info_{current_language}__icontains': query})
+        )
+        products = Product.objects.filter(
+            Q(**{f'name_{current_language}__icontains': query})
+        )
+        
+
+        employee_serializer = serializers.UserListSerializer(employees, many=True)
+        food_serializer = serializers.FoodSerializer(foods, many=True)
+        product_serializer = serializers.ProductSerializer(products, many=True)
+        
+        return Response({
+            'employees': employee_serializer.data,
+            'foods': food_serializer.data,
+            'products': product_serializer.data,
+        }, status=status.HTTP_200_OK)
+    
 
 class EmployeesListApiView(generics.ListAPIView):
     permission_classes = (permissions.IsAdminUser,)

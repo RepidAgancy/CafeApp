@@ -11,22 +11,25 @@ class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'first_name', 'last_name', 'email', 'phone_number','profile_image', 'work_experience', 'salary','type'
+            'id', 'first_name', 'last_name', 'phone_number','profile_image', 'work_experience', 'salary','type'
         ]
+
+
+class SearchSerializer(serializers.Serializer):
+    query = serializers.CharField(required=False, max_length=255, help_text="Search query string")
 
 
 class EmployeeCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'first_name', 'last_name', 'email', 'phone_number', 'salary', 'work_experience','profile_image', 'type', 'username', 'password',
+            'first_name', 'last_name', 'phone_number', 'salary', 'work_experience','profile_image', 'type', 'username', 'password',
         ]
 
     def create(self, validated_data):
         employee = User.objects.create_user(
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
-            email=validated_data['email'],
             type = validated_data['type'],
             phone_number=validated_data['phone_number'],
             profile_image = validated_data.get('profile_image',None),
@@ -48,7 +51,7 @@ class EmployeeUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'first_name', 'last_name', 'email', 'phone_number', 'salary', 'type', 'work_experience','profile_image', 'username', 'password',
+            'first_name', 'last_name', 'phone_number', 'salary', 'type', 'work_experience','profile_image', 'username', 'password',
         ]
 
 class FoodCategoryListSerializer(serializers.ModelSerializer):
@@ -74,12 +77,16 @@ class FoodSerializer(serializers.ModelSerializer):
 
     def get_category_id(self, obj):
         return obj.category.id
+    
 
 class FoodCreateUpdateSerializer(serializers.ModelSerializer):
+    food_info_uz = serializers.CharField(required=False)
+    food_info_ru = serializers.CharField(required=False)
+    
     class Meta:
         model = common_models.Food
         fields = [
-            'id', 'name', 'image', 'price', 'category', 'food_info_uz', 'food_info_ru', 'food_info_en'
+            'id', 'name', 'image', 'price', 'category', 'food_info', 'food_info_uz', 'food_info_ru', 'food_info_en'
         ]
 
     def create(self, validated_data):
