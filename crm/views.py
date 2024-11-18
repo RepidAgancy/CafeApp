@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.db.models import Sum
 from django.db.models.functions import ExtractMonth
 from django.utils import timezone
@@ -59,15 +59,8 @@ class StatisticsApiView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
 
         # Extract validated data
-        start_date = serializer.validated_data['start_date']
-        end_date = serializer.validated_data['end_date']
-
-        # Ensure end_date is not earlier than start_date
-        if end_date < start_date:
-            return Response(
-                {"error": "end_date must be greater than or equal to start_date."},
-                status=400
-            )
+        start_date = serializer.validated_data.get('start_date',datetime.now().strftime("%Y-%m-%d"))
+        end_date = serializer.validated_data.get('end_date', datetime.now().strftime("%Y-%m-%d"))
 
         # Query data based on the provided date range
         income_orders = OrderProduct.objects.filter(
