@@ -82,7 +82,8 @@ class FoodSerializer(serializers.ModelSerializer):
 class FoodCreateUpdateSerializer(serializers.ModelSerializer):
     food_info_uz = serializers.CharField(required=False)
     food_info_ru = serializers.CharField(required=False)
-    
+    food_info_en = serializers.CharField(required=False)
+
     class Meta:
         model = common_models.Food
         fields = [
@@ -95,9 +96,9 @@ class FoodCreateUpdateSerializer(serializers.ModelSerializer):
             image=validated_data['image'],
             price=validated_data['price'],
             category=validated_data['category'],
-            food_info_uz=validated_data['food_info_uz'],
-            food_info_ru=validated_data['food_info_ru'],
-            food_info_en=validated_data['food_info_en'],
+            food_info_uz=validated_data.get('food_info_uz', None),
+            food_info_ru=validated_data.get('food_info_ru', None),
+            food_info_en=validated_data.get('food_info_en', None),
         )
         return {
             'id': food.id, 'name': food.name, 'image': food.image.url, 'price': food.price, 'category': food.category.name, 'category_id': food.category_id, 'food_info_uz': food.food_info_uz,
