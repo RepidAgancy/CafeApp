@@ -101,7 +101,7 @@ class FoodCreateUpdateSerializer(serializers.ModelSerializer):
             food_info_en=validated_data.get('food_info_en', None),
         )
         return {
-            'id': food.id, 'name': food.name, 'image': f"http://127.0.0.1:8000{food.image.url}", 'price': food.price, 'category': food.category.name, 'category_id': food.category_id, 'food_info': food.food_info,
+            'id': food.id, 'name': food.name, 'image': f"http://crm.repid.uz{food.image.url}", 'price': food.price, 'category': food.category.name, 'category_id': food.category_id, 'food_info': food.food_info,
         }
 
 
