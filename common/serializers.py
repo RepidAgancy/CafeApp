@@ -4,11 +4,20 @@ from common import models
 
 
 class TableListSerializer(serializers.ModelSerializer):
+    cart_id = serializers.SerializerMethodField(method_name='get_cart_id')
+
     class Meta:
         model = models.Table
         fields = [
-            'id', 'number', 'is_busy',
+            'id', 'number', 'is_busy', 'cart_id'
         ]
+
+    def get_cart_id(self, obj):
+        cart = models.Cart.objects.filter(table_id=obj.id).first()
+        if obj.is_busy:
+            return cart.id
+        else:
+            return None
 
 
 class TableGetSerializer(serializers.Serializer):
