@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from common.models import BaseModel
 
-ADMIN, WAITER, CASHIER, STOREKEEPER = (_('admin'), _('afitsant'), _('kassir'), _('omborchi'))
+ADMIN, WAITER, CASHIER, STOREKEEPER, COOKER = (_('admin'), _('afitsant'), _('kassir'), _('omborchi'),_('oshpaz'))
 
 
 class User(AbstractUser, BaseModel):
@@ -13,6 +13,7 @@ class User(AbstractUser, BaseModel):
         (WAITER, WAITER),
         (CASHIER, CASHIER),
         (STOREKEEPER, STOREKEEPER),
+        (COOKER, COOKER)
     )
     type = models.CharField(max_length=50, choices=USER_TYPE)
     profile_image = models.ImageField(upload_to='accounts/images/profile/%Y/%m/%d/',null=True, blank=True)

@@ -45,18 +45,6 @@ class FoodCategoryListApiView(generics.ListAPIView):
     permission_classes = [permissions.IsCashierOrWaiter]
 
 
-# class FoodListByCategoryApiView(generics.GenericAPIView):
-#     permission_classes = [permissions.IsCashierOrWaiter]
-#     serializer_class = serializers.FoodListByCategorySerializer
-
-#     def get(self, request, category_id):
-#         try:
-#             category = models.CategoryFood.objects.get(id=category_id)
-#         except models.CategoryFood.DoesNotExist:
-#             return Response(status=status.HTTP_404_NOT_FOUND)
-#         foods = models.Food.objects.filter(category=category)
-#         serializer = self.get_serializer(foods, many=True)
-#         return Response(serializer.data)
 class FoodListByCategoryApiView(generics.GenericAPIView):
     permission_classes = [permissions.IsCashierOrWaiter]
     serializer_class = serializers.FoodListByCategorySerializer

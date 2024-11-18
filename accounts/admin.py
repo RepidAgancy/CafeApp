@@ -11,7 +11,7 @@ class UserAdmin(UserAdmin):
     fieldsets = (
         (None, {"fields": ("username", "password", 'type')}),
         (_("Personal info"), {"fields": (
-            "first_name", "last_name", "email",
+            "first_name", "last_name", 
             'profile_image', 'salary', 'phone_number', 'work_experience',
         )}),
         (
@@ -35,8 +35,8 @@ class UserAdmin(UserAdmin):
             },
         ),
     )
-    list_display = ("username", "email", "first_name", "last_name", "is_staff")
+    list_display = ("username", "first_name", "last_name", "is_staff")
     list_filter = ("is_staff", "is_superuser", "is_active", "groups")
-    search_fields = ("username", "first_name", "last_name", "email")
+    search_fields = ("username", "first_name", "last_name",)
     ordering = ("username",)
 
