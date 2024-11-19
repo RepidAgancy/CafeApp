@@ -126,21 +126,24 @@ class CartItemUpdateSerializer(serializers.ModelSerializer):
             cart_item = models.CartItem.objects.get(id=self.context['cart_item_id'])
         except models.CartItem.DoesNotExist:
             raise serializers.ValidationError({'message': 'CartItem not found'})
-        if cart_item.cart.user == self.context['request'].user:
-            old_quantity = cart_item.quantity
-            food_price = cart_item.food.price
-            total_price = cart_item.cart.total_price
-            total_price -= (old_quantity * food_price)
-
-            quantity = self.validated_data['quantity']
-            total_price += (quantity * food_price)
-            cart_item.quantity = self.validated_data['quantity']
-
-            cart_item.cart.total_price = total_price
-            cart_item.cart.save()
-            cart_item.save()
+        if cart_item.cart.is_confirm:
+            raise serializers.ValidationError({'message': 'CartItem is already confirmed'})
         else:
-            raise serializers.ValidationError({'message': 'You are not allowed to update'})
+            if cart_item.cart.user == self.context['request'].user:
+                old_quantity = cart_item.quantity
+                food_price = cart_item.food.price
+                total_price = cart_item.cart.total_price
+                total_price -= (old_quantity * food_price)
+
+                quantity = self.validated_data['quantity']
+                total_price += (quantity * food_price)
+                cart_item.quantity = self.validated_data['quantity']
+
+                cart_item.cart.total_price = total_price
+                cart_item.cart.save()
+                cart_item.save()
+            else:
+                raise serializers.ValidationError({'message': 'You are not allowed to update'})
 
         return {
             'message': 'CartItem updated',
