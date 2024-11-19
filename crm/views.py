@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.db.models import Sum
 from django.db.models.functions import ExtractMonth
 from django.utils import timezone
@@ -16,8 +16,9 @@ from common.models import Order, PROFIT, EXPENSE, DONE, Food, CategoryFood
 from accounts.models import User, WAITER, CASHIER
 
 
-class StatisticsApiView(views.APIView):
+class StatisticsApiView(generics.GenericAPIView):
     permission_classes = (permissions.IsAdminUser,)
+    serializer_class = serializers.StartandEndDateSerializer
 
     def get(self, request):
         today = timezone.now().date()
@@ -48,6 +49,49 @@ class StatisticsApiView(views.APIView):
             },
             'employees': employees,
             'customers_today': customers_today,
+        }
+
+        return Response(data)
+    
+    def post(self, request,*args,**kwargs):
+        # Deserialize and validate input data
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # Extract validated data
+        start_date = serializer.validated_data.get('start_date',datetime.now().strftime("%Y-%m-%d"))
+        end_date = serializer.validated_data.get('end_date', datetime.now().strftime("%Y-%m-%d"))
+
+        # Query data based on the provided date range
+        income_orders = OrderProduct.objects.filter(
+            type=PROFIT, is_confirm=True, status=APPROVED,
+            created_at__date__range=(start_date, end_date)
+        )
+        expense_orders = Order.objects.filter(
+            type=EXPENSE, is_confirm=True, status=DONE,
+            created_at__date__range=(start_date, end_date)
+        )
+
+        total_income = sum(order.cart.total_price for order in income_orders)
+        total_expense = sum(order.cart.total_price for order in expense_orders)
+
+        # Additional data
+        employees = User.objects.count()
+        customers = Order.objects.filter(
+            is_confirm=True, status=APPROVED,
+            created_at__date__range=(start_date, end_date)
+        ).count()
+
+        # Prepare response data
+        data = {
+            'total_income': {
+                'value': total_income,
+            },
+            'total_expense': {
+                'value': total_expense,
+            },
+            'employees': employees,
+            'customers': customers,
         }
 
         return Response(data)

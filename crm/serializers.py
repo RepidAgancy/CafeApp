@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 
@@ -17,6 +19,33 @@ class UserListSerializer(serializers.ModelSerializer):
 
 class SearchSerializer(serializers.Serializer):
     query = serializers.CharField(required=False, max_length=255, help_text="Search query string")
+
+
+class StartandEndDateSerializer(serializers.Serializer):
+    start_date = serializers.DateTimeField(required=False, input_formats=["%Y-%m-%d"], help_text="year month day")
+    end_date = serializers.DateTimeField(required=False,input_formats=["%Y-%m-%d"], help_text="year month day")
+
+    def validate_start_date(self, value):
+            if value.date() > datetime.now().date():
+                raise serializers.ValidationError("Start date cannot be in the future.")
+            return value
+
+
+    def validate_end_date(self, value):
+        if value.date() > datetime.now().date():
+            raise serializers.ValidationError("End date cannot be in the future.")
+        return value
+
+
+    def validate(self, attrs):
+        start_date = attrs.get("start_date")
+        end_date = attrs.get("end_date")
+
+
+        if start_date and end_date:
+            if start_date > end_date:
+                raise serializers.ValidationError("Start date must be before or equal to the end date.")
+        return attrs
 
 
 class EmployeeCreateSerializer(serializers.ModelSerializer):
@@ -96,12 +125,13 @@ class FoodCreateUpdateSerializer(serializers.ModelSerializer):
             image=validated_data['image'],
             price=validated_data['price'],
             category=validated_data['category'],
+            food_info=validated_data['food_info'],
             food_info_uz=validated_data.get('food_info_uz', None),
             food_info_ru=validated_data.get('food_info_ru', None),
             food_info_en=validated_data.get('food_info_en', None),
         )
         return {
-            'id': food.id, 'name': food.name, 'image': food.image.url, 'price': food.price, 'category': food.category.name, 'category_id': food.category_id, 'food_info': food.food_info,
+            'id': food.id, 'name': food.name, 'image': f"http://crm.repid.uz{food.image.url}", 'price': food.price, 'category': food.category.name, 'category_id': food.category_id, 'food_info': food.food_info,
         }
 
 
