@@ -13,7 +13,7 @@ class TableListSerializer(serializers.ModelSerializer):
         ]
 
     def get_cart_id(self, obj):
-        cart = models.Cart.objects.filter(table_id=obj.id).first()
+        cart = models.Cart.objects.filter(table_id=obj.id).last()
         if obj.is_busy:
             return cart.id
         else:
@@ -195,10 +195,18 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         extra_kwargs = {'id': {'read_only': True}}
 
     def create(self, validated_data):
-        order = models.Order.objects.create(
-            cart=validated_data['cart'], status=models.IN_PROCESS
-        )
+        try:
+            order = models.Order.objects.get(
+                cart=validated_data['cart'], status=models.IN_PROCESS
+            )
+        except models.Order.DoesNotExist:
+            order = models.Order.objects.create(
+                cart=validated_data['cart'],
+                status=models.IN_PROCESS,
+            )
         cart = order.cart
+        cart.is_confirm = True
+        cart.save()
         return {
             'order_id': order.id,
             'status': order.status,
