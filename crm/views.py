@@ -254,7 +254,6 @@ class FoodCategoryListView(generics.ListAPIView):
 class FoodCreateApiView(generics.GenericAPIView):
     serializer_class = serializers.FoodCreateUpdateSerializer
     permission_classes = (permissions.IsAdminUser,)
-    queryset = Food.objects.all()
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
