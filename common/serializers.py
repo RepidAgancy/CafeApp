@@ -212,6 +212,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             'status': order.status,
             'created_at': order.created_at,
             'cart': CartSerializer(order.cart).data,
+            'cart_is_confirm': cart.is_confirm,
             'total_price': cart.total_price,
             'table_number': cart.table.number,
         }
