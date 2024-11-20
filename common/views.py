@@ -95,7 +95,7 @@ class CartItemEditApiView(generics.GenericAPIView):
 
 
 class CartItemDeleteApiView(generics.GenericAPIView):
-    serializer_class = serializers.CartItemUpdateSerializer
+    # serializer_class = serializers.CartItemUpdateSerializer
     permission_classes = [permissions.IsCashierOrWaiter]
     queryset = models.CartItem.objects.all()
 
@@ -104,14 +104,17 @@ class CartItemDeleteApiView(generics.GenericAPIView):
             cart_item = models.CartItem.objects.get(pk=cart_item_id)
         except models.CartItem.DoesNotExist:
             return Response({'message': 'cart item not found'},status=status.HTTP_404_NOT_FOUND)
-        if cart_item.cart.user == request.user:
-            food_price = cart_item.food.price
-            food_quantity = cart_item.quantity
-            cart_total_price = cart_item.cart.total_price
-            total_price = cart_total_price - (food_price * food_quantity)
-            cart_item.cart.total_price = total_price
-            cart_item.cart.save()
-            cart_item.delete()
+        if cart_item.cart.is_confirm:
+            return Response({'message': 'You can not delete this cart item'})
+        else:
+            if cart_item.cart.user == request.user:
+                food_price = cart_item.food.price
+                food_quantity = cart_item.quantity
+                cart_total_price = cart_item.cart.total_price
+                total_price = cart_total_price - (food_price * food_quantity)
+                cart_item.cart.total_price = total_price
+                cart_item.cart.save()
+                cart_item.delete()
         return Response({'message': 'Cart item successfully deleted'}, status=status.HTTP_200_OK)
 
 
