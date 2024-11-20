@@ -7,6 +7,7 @@ from django.utils.translation import get_language
 
 from rest_framework import generics, views, status
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import AccessToken
 
 from crm import serializers, models, permissions
 from crm.utils import calculate_percentage_change
@@ -200,6 +201,23 @@ class SearchAPIView(generics.GenericAPIView):
             'foods': food_serializer.data,
             'products': product_serializer.data,
         }, status=status.HTTP_200_OK)
+    
+
+class ValidateAccessTokenView(generics.ListAPIView):
+    serializer_class = serializers.ValidateAccessToken
+    
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        token = serializer.validated_data['access_token']
+        if not token:
+            return Response({"valid": False, "message": "Token not provided"}, status=400)
+        
+        try:
+            AccessToken(token)
+            return Response({"valid": True}, status=200)
+        except Exception as e:
+            return Response({"valid": False, "message": str(e)}, status=401)
     
 
 class EmployeesListApiView(generics.ListAPIView):

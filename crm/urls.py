@@ -28,4 +28,6 @@ urlpatterns = [
     path('payment/history/list/', views.PaymentHistoryListApiView.as_view(), name='payment-history-list'),
     # payment-type list
     path('paymeny/type/list/', views.PaymentCategoryApiView.as_view(), name='payment-category-list'),
+    #validation for access token
+    path('validate-accesstoken', views.ValidateAccessTokenView.as_view(), name='access-token-validate'),
 ]
