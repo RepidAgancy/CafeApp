@@ -173,6 +173,7 @@ class CartItemSerializer(serializers.ModelSerializer):
 
 class CartSerializer(serializers.ModelSerializer):
     cart_items = serializers.SerializerMethodField(method_name='get_cart_items')
+    table = serializers.IntegerField(source='table.number')
 
     class Meta:
         model = models.Cart
