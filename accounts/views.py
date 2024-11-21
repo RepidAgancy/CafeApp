@@ -4,6 +4,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from accounts import serializers
 from accounts.models import User
+from accounts.serializers import UserProfileSerializer
 from crm.serializers import UserListSerializer
 
 
@@ -45,7 +46,7 @@ class UserTypeListApiView(views.APIView):
 
 class UserProfileView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
-    serializer_class = UserListSerializer
+    serializer_class = UserProfileSerializer
 
     def get(self, request):
         user_serializer = self.serializer_class(instance=request.user)
