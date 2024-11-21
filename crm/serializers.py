@@ -21,6 +21,10 @@ class SearchSerializer(serializers.Serializer):
     query = serializers.CharField(required=False, max_length=255, help_text="Search query string")
 
 
+class ValidateAccessToken(serializers.Serializer):
+    access_token = serializers.CharField()
+
+
 class StartandEndDateSerializer(serializers.Serializer):
     start_date = serializers.DateTimeField(required=False, input_formats=["%Y-%m-%d"], help_text="year month day")
     end_date = serializers.DateTimeField(required=False,input_formats=["%Y-%m-%d"], help_text="year month day")
@@ -92,16 +96,16 @@ class FoodCategoryListSerializer(serializers.ModelSerializer):
 
 
 class FoodSerializer(serializers.ModelSerializer):
-    category = serializers.SerializerMethodField(method_name='get_category')
-    category_id = serializers.SerializerMethodField(method_name='get_category_id')
+    category_name = serializers.SerializerMethodField(method_name='get_category_name')
+    category = serializers.SerializerMethodField(method_name='get_category_id')
 
     class Meta:
         model = common_models.Food
         fields = [
-            'id', 'name', 'image', 'price', 'category', 'category_id', 'food_info', 'food_info_uz', 'food_info_ru', 'food_info_en'
+            'id', 'name', 'image', 'price', 'category', 'category_name', 'food_info_uz', 'food_info_ru', 'food_info_en'
         ]
 
-    def get_category(self, obj):
+    def get_category_name(self, obj):
         return obj.category.name
 
     def get_category_id(self, obj):
@@ -109,14 +113,10 @@ class FoodSerializer(serializers.ModelSerializer):
     
 
 class FoodCreateUpdateSerializer(serializers.ModelSerializer):
-    food_info_uz = serializers.CharField(required=False)
-    food_info_ru = serializers.CharField(required=False)
-    food_info_en = serializers.CharField(required=False)
-
     class Meta:
         model = common_models.Food
         fields = [
-            'id', 'name', 'image', 'price', 'category', 'food_info', 'food_info_uz', 'food_info_ru', 'food_info_en'
+            'id', 'name', 'image', 'price', 'category', 'food_info_uz', 'food_info_ru', 'food_info_en'
         ]
 
     def create(self, validated_data):
@@ -125,16 +125,30 @@ class FoodCreateUpdateSerializer(serializers.ModelSerializer):
             image=validated_data['image'],
             price=validated_data['price'],
             category=validated_data['category'],
-            food_info=validated_data['food_info'],
             food_info_uz=validated_data.get('food_info_uz', None),
             food_info_ru=validated_data.get('food_info_ru', None),
             food_info_en=validated_data.get('food_info_en', None),
-        )
+        )   
         return {
-            'id': food.id, 'name': food.name, 'image': f"http://crm.repid.uz{food.image.url}", 'price': food.price, 'category': food.category.name, 'category_id': food.category_id, 'food_info': food.food_info,
+            'id': food.id, 
+            'name': food.name, 
+            'image': f"http://api.repid.uz{food.image.url}", 
+            'price': food.price, 
+            'category_name': food.category.name, 
+            'category': food.category_id, 
+            'food_info_uz':food.food_info_uz,
+            'food_info_ru':food.food_info_ru,
+            'food_info_en':food.food_info_en,
         }
+    
+    def to_representation(self, instance):
+        data = super(FoodCreateUpdateSerializer, self).to_representation(instance)
+        data['category_name'] = instance.category.name
 
+        return data
 
+    
+    
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product

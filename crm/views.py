@@ -7,13 +7,14 @@ from django.utils.translation import get_language
 
 from rest_framework import generics, views, status
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import AccessToken
 
 from crm import serializers, models, permissions
 from crm.utils import calculate_percentage_change
 from crm.pagination import CustomPagination
 from product.models import OrderProduct, APPROVED, Product
 from common.models import Order, PROFIT, EXPENSE, DONE, Food, CategoryFood
-from accounts.models import User, WAITER, CASHIER
+from accounts.models import User, WAITER, CASHIER, ADMIN
 
 
 class StatisticsApiView(generics.GenericAPIView):
@@ -202,9 +203,26 @@ class SearchAPIView(generics.GenericAPIView):
         }, status=status.HTTP_200_OK)
     
 
+class ValidateAccessTokenView(generics.GenericAPIView):
+    serializer_class = serializers.ValidateAccessToken
+    
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        token = serializer.validated_data['access_token']
+        if not token:
+            return Response({"valid": False, "message": "Token not provided"}, status=400)
+        
+        try:
+            AccessToken(token)
+            return Response({"valid": True}, status=200)
+        except Exception as e:
+            return Response({"valid": False, "message": str(e)}, status=401)
+    
+
 class EmployeesListApiView(generics.ListAPIView):
     permission_classes = (permissions.IsAdminUser,)
-    queryset = User.objects.all()
+    queryset = User.objects.filter().exclude(type=ADMIN)
     serializer_class = serializers.UserListSerializer
     pagination_class = CustomPagination
 
