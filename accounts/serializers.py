@@ -35,13 +35,4 @@ class LoginSerializer(serializers.Serializer):
 class LogoutSerializer(serializers.Serializer):
     refresh_token = serializers.CharField()
 
-class UserProfileSerializer(serializers.ModelSerializer):
-    full_name = serializers.SerializerMethodField()
-
-    class Meta:
-        model = User
-        fields = ('full_name','phone_number','profile_image','type')
-
-    def get_full_name(self,obj):
-        return f"{obj.first_name} {obj.last_name}"
 

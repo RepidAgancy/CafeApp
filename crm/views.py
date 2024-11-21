@@ -14,7 +14,7 @@ from crm.utils import calculate_percentage_change
 from crm.pagination import CustomPagination
 from product.models import OrderProduct, APPROVED, Product
 from common.models import Order, PROFIT, EXPENSE, DONE, Food, CategoryFood
-from accounts.models import User, WAITER, CASHIER
+from accounts.models import User, WAITER, CASHIER, ADMIN
 
 
 class StatisticsApiView(generics.GenericAPIView):
@@ -203,7 +203,7 @@ class SearchAPIView(generics.GenericAPIView):
         }, status=status.HTTP_200_OK)
     
 
-class ValidateAccessTokenView(generics.ListAPIView):
+class ValidateAccessTokenView(generics.GenericAPIView):
     serializer_class = serializers.ValidateAccessToken
     
     def post(self, request):
@@ -222,7 +222,7 @@ class ValidateAccessTokenView(generics.ListAPIView):
 
 class EmployeesListApiView(generics.ListAPIView):
     permission_classes = (permissions.IsAdminUser,)
-    queryset = User.objects.all()
+    queryset = User.objects.filter().exclude(type=ADMIN)
     serializer_class = serializers.UserListSerializer
     pagination_class = CustomPagination
 
