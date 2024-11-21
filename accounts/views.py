@@ -47,7 +47,7 @@ class UserTypeListApiView(views.APIView):
 class UserProfileView(generics.GenericAPIView):
     permission_classes = (permissions.IsAuthenticated,)
     serializer_class = UserProfileSerializer
-
+    pagination_class = None
     def get(self, request):
         user_serializer = self.serializer_class(instance=request.user)
         return response.Response(user_serializer.data)
