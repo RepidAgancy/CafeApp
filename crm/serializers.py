@@ -150,10 +150,11 @@ class FoodCreateUpdateSerializer(serializers.ModelSerializer):
     
     
 class ProductSerializer(serializers.ModelSerializer):
+    category_name = serializers.CharField(source='category.name')
     class Meta:
         model = Product
         fields = [
-            'id', 'name_uz', 'name_ru', 'name_en', 'image', 'price', 'category'
+            'id', 'name_uz', 'name_ru', 'name_en', 'image', 'price', 'category', 'category_name'
         ]
 
 
