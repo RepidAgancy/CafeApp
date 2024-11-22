@@ -139,7 +139,7 @@ class ChartActivityIncomeApiView(views.APIView):
 
     def get(self, request):
         today = timezone.now().date()
-        orders = Order.objects.filter(type=PROFIT, is_confirm=True, status=APPROVED, created_at__date=today)
+        orders = Order.objects.filter(type=PROFIT, is_confirm=True, status=DONE, created_at__date=today)
         waiter_orders = orders.filter(cart__user__type=WAITER)
         cashier_orders = orders.filter(cart__user__type=CASHIER)
         total_price = 0
