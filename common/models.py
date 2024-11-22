@@ -91,7 +91,7 @@ class Order(BaseModel):
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='orders')
     status = models.CharField(max_length=20, choices=STATUS, default=IN_PROCESS)
     is_confirm = models.BooleanField(default=False)
-    type = models.CharField(max_length=20, choices=TYPE)
+    type = models.CharField(max_length=20, choices=TYPE, default=PROFIT)
 
 
     def __str__(self):

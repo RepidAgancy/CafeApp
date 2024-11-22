@@ -78,7 +78,7 @@ class OrderProduct(BaseModel):
     cart = models.ForeignKey(CartProduct, on_delete=models.CASCADE, related_name='order_products')
     is_confirm = models.BooleanField(default=False)
     status = models.CharField(max_length=50, choices=STATUS)
-    type = models.CharField(max_length=250, choices=TYPE)
+    type = models.CharField(max_length=250, choices=TYPE, default=EXPENSE)
 
     def __str__(self):
         return f"{self.cart} - {self.is_confirm}"

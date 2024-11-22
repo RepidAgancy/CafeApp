@@ -13,6 +13,7 @@ class TableListApiView(generics.ListAPIView):
     permission_classes = [permissions.IsCashierOrWaiter]
     pagination_class = None
 
+
 class TableGetApiView(generics.GenericAPIView):
     serializer_class = serializers.TableGetSerializer
     permission_classes = [permissions.IsCashierOrWaiter]
