@@ -23,17 +23,17 @@ class StatisticsApiView(generics.GenericAPIView):
 
     def get(self, request):
         today = timezone.now().date()
-        income_orders_until_today = OrderProduct.objects.filter(type=EXPENSE, is_confirm=True, status=APPROVED,
+        expance_ordersproduct_until_today = OrderProduct.objects.filter(type=EXPENSE, is_confirm=True, status=APPROVED,
                                                     created_at__date__lte=today)
         expance_payment_until_today = Payment.objects.filter(type=EXPENSE, created_at__date__lte=today)
-        expense_orders_today = Order.objects.filter(type=PROFIT, is_confirm=True, status=DONE, created_at__date__lte=today)
+        income_orders_today = Order.objects.filter(type=PROFIT, is_confirm=True, status=DONE, created_at__date__lte=today)
 
-        total_income_today = sum(order.cart.total_price for order in income_orders_until_today)
-        total_expense_today = sum(payment.price for payment in expance_payment_until_today)
-        total_income_today += sum(order.cart.total_price for order in expense_orders_today)
+        total_expense_today = sum(order.cart.total_price for order in expance_ordersproduct_until_today)
+        total_expense_today += sum(payment.price for payment in expance_payment_until_today)
+        total_income_today = sum(order.cart.total_price for order in income_orders_today)
         employees = User.objects.count()
         customers_today = Order.objects.filter(is_confirm=True, status=DONE, created_at__date__lte=today).count()
-        
+
         data = {
             'total_income': {
                 'value': total_income_today,
@@ -62,11 +62,11 @@ class StatisticsApiView(generics.GenericAPIView):
         expance_orders_until_today = OrderProduct.objects.filter(type=EXPENSE, is_confirm=True, status=APPROVED,
                                                     created_at__date__range=(start_date, end_date))
         expance_payment_until_today = Payment.objects.filter(type=EXPENSE, created_at__date__range=(start_date, end_date))
-        expense_orders_today = Order.objects.filter(type=PROFIT, is_confirm=True, status=DONE, created_at__date__range=(start_date, end_date))
+        income_orders_today = Order.objects.filter(type=PROFIT, is_confirm=True, status=DONE, created_at__date__range=(start_date, end_date))
 
         total_expance_sofar = sum(order.cart.total_price for order in expance_orders_until_today)
         total_expance_sofar += sum(payment.price for payment in expance_payment_until_today)
-        total_income_sofar = sum(order.cart.total_price for order in expense_orders_today)
+        total_income_sofar = sum(order.cart.total_price for order in income_orders_today)
 
         # Additional data
         employees = User.objects.filter(created_at__date__range=(start_date, end_date)).count()

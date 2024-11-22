@@ -21,7 +21,7 @@ class Payment(BaseModel):
     )
     full_name = models.CharField(max_length=250, null=False, blank=False)
     profession = models.CharField(max_length=250, null=True, blank=True)
-    price = models.PositiveIntegerField(null=True, blank=True)
+    price = models.PositiveIntegerField(default=0)
     description = models.TextField(null=True, blank=True)
     category = models.CharField(max_length=250, choices=CATEGORY)
     type = models.CharField(max_length=120, choices=TYPE, default=EXPENSE)
