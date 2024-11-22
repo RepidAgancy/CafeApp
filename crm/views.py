@@ -327,7 +327,7 @@ class PaymentCreateApiView(generics.CreateAPIView):
 
 class PaymentHistoryListApiView(generics.ListAPIView):
     serializer_class = serializers.PaymentHistoryListSerializer
-    queryset = models.Payment.objects.all()
+    queryset = models.Payment.objects.all().order_by('-created_at')
     permission_classes = (permissions.IsAdminUser,)
 
 
