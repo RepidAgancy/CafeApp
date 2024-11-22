@@ -13,8 +13,8 @@ class TableListSerializer(serializers.ModelSerializer):
         ]
 
     def get_cart_id(self, obj):
-        cart = models.Cart.objects.filter(table_id=obj.id).last()
-        if obj.is_busy and cart.table == obj:
+        if obj.is_busy:
+            cart = models.Cart.objects.filter(table_id=obj.id).last()
             return cart.id
         else:
             return None
