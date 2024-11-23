@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'django_filters',
     'silk',
+    'rosetta',
     # local apps
     'accounts',
     'common',
@@ -282,3 +283,10 @@ CACHES = {
         }
     }
 }
+
+ROSETTA_LANGUAGES = LANGUAGES
+ROSETTA_REQUIRES_AUTH = True
+ROSETTA_AUTO_COMPILE = True
+LOCALE_PATHS = [
+    BASE_DIR / 'locale'
+]
