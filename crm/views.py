@@ -253,12 +253,14 @@ class FoodListApiView(generics.ListAPIView):
     serializer_class = serializers.FoodSerializer
     queryset = Food.objects.all()
     permission_classes = (permissions.IsAdminUser,)
+    pagination_class = None
 
 
 class FoodCategoryListView(generics.ListAPIView):
     serializer_class = serializers.FoodCategoryListSerializer
     queryset = CategoryFood.objects.all()
     permission_classes = (permissions.IsAdminUser, )
+    pagination_class = None
 
 
 class FoodCreateApiView(generics.GenericAPIView):
@@ -296,6 +298,7 @@ class ProductListApiView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = serializers.ProductSerializer
     permission_classes = (permissions.IsAdminUser,)
+    pagination_class = None
 
 
 class PaymentEmployeeSalaryCreateApiView(generics.GenericAPIView):
