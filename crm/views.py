@@ -12,7 +12,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 from crm import serializers, models, permissions
 from crm.pagination import CustomPagination
 from crm.models import Payment
-from product.models import OrderProduct, APPROVED, Product
+from product.models import OrderProduct, APPROVED, Product, CartItemProduct
 from common.models import Order, PROFIT, EXPENSE, DONE, Food, CategoryFood
 from accounts.models import User, WAITER, CASHIER, ADMIN
 
@@ -50,15 +50,13 @@ class StatisticsApiView(generics.GenericAPIView):
         return Response(data)
     
     def post(self, request,*args,**kwargs):
-        # Deserialize and validate input data
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # Extract validated data
-        start_date = serializer.validated_data.get('start_date',datetime.now().strftime("%Y-%m-%d"))
+        start_date = serializer.validated_data.get('start_date',"2024-09-09")
         end_date = serializer.validated_data.get('end_date', datetime.now().strftime("%Y-%m-%d"))
 
-        # Query data based on the provided date range
+
         expance_orders_until_today = OrderProduct.objects.filter(type=EXPENSE, is_confirm=True, status=APPROVED,
                                                     created_at__date__range=(start_date, end_date))
         expance_payment_until_today = Payment.objects.filter(type=EXPENSE, created_at__date__range=(start_date, end_date))
@@ -68,14 +66,13 @@ class StatisticsApiView(generics.GenericAPIView):
         total_expance_sofar += sum(payment.price for payment in expance_payment_until_today)
         total_income_sofar = sum(order.cart.total_price for order in income_orders_today)
 
-        # Additional data
         employees = User.objects.filter(created_at__date__range=(start_date, end_date)).count()
         customers = Order.objects.filter(
             is_confirm=True, status=DONE,
             created_at__date__range=(start_date, end_date)
         ).count()
 
-        # Prepare response data
+
         data = {
             'total_income': {
                 'value': total_income_sofar,
@@ -295,7 +292,7 @@ class FoodDeleteApiView(views.APIView):
 
 
 class ProductListApiView(generics.ListAPIView):
-    queryset = Product.objects.all()
+    queryset = CartItemProduct.objects.all()
     serializer_class = serializers.ProductSerializer
     permission_classes = (permissions.IsAdminUser,)
     pagination_class = None

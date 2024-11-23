@@ -53,3 +53,9 @@ class UserProfileView(generics.GenericAPIView):
         return response.Response(user_serializer.data)
 
 
+class UserProfileChangeView(generics.UpdateAPIView):
+    permission_classes = (permissions.IsAdminUser,)  
+    serializer_class = UserProfileSerializer
+
+    def get_object(self):
+        return self.request.user
