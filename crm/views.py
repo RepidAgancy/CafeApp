@@ -308,7 +308,7 @@ class FoodDeleteApiView(views.APIView):
 
 
 class ProductListApiView(generics.ListAPIView):
-    queryset = CartItemProduct.objects.all()
+    queryset = Product.objects.all()
     serializer_class = serializers.ProductSerializer
     permission_classes = (permissions.IsAdminUser,)
     pagination_class = None
