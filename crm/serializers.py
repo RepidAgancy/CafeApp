@@ -45,7 +45,6 @@ class StartandEndDateSerializer(serializers.Serializer):
         start_date = attrs.get("start_date")
         end_date = attrs.get("end_date")
 
-
         if start_date and end_date:
             if start_date > end_date:
                 raise serializers.ValidationError("Start date must be before or equal to the end date.")

@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from common.models import BaseModel
 
-ADMIN, WAITER, CASHIER, STOREKEEPER, COOKER = (_('admin'), _('afitsant'), _('kassir'), _('omborchi'),_('oshpaz'))
+ADMIN, WAITER, CASHIER, STOREKEEPER, COOKER = (_('admin'), _('ofitsant'), _('kassir'), _('omborchi'),_('oshpaz'))
 
 
 class User(AbstractUser, BaseModel):
