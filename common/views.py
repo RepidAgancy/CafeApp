@@ -9,7 +9,7 @@ from common import models, serializers, permissions, filters
 
 class TableListApiView(generics.ListAPIView):
     serializer_class = serializers.TableListSerializer
-    queryset = models.Table.objects.all()
+    queryset = models.Table.objects.order_by('number')
     permission_classes = [permissions.IsCashierOrWaiter]
     pagination_class = None
 
