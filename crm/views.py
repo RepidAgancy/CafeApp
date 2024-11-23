@@ -15,6 +15,22 @@ from crm.models import Payment
 from product.models import OrderProduct, APPROVED, Product, CartItemProduct
 from common.models import Order, PROFIT, EXPENSE, DONE, Food, CategoryFood
 from accounts.models import User, WAITER, CASHIER, ADMIN
+import polib
+from django.http import JsonResponse
+from django.conf import settings
+
+
+def get_translations(request, lang_code):
+    try:
+        po_file_path = f"{settings.LOCALE_PATHS[0]}/{lang_code}/LC_MESSAGES/django.po"
+
+        po = polib.pofile(po_file_path)
+
+        translations = {entry.msgid: entry.msgstr for entry in po if entry.msgstr}
+
+        return JsonResponse({"translations": translations})
+    except FileNotFoundError:
+        return JsonResponse({"error": "Tarjima fayli topilmadi"}, status=404)
 
 
 class StatisticsApiView(generics.GenericAPIView):

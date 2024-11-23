@@ -19,23 +19,23 @@ msgstr ""
 
 #: .\accounts\admin.py:13
 msgid "Personal info"
-msgstr ""
+msgstr "csdcsdcs"
 
 #: .\accounts\admin.py:18
 msgid "Permissions"
-msgstr ""
+msgstr "dcsdcs"
 
 #: .\accounts\admin.py:27
 msgid "Important dates"
-msgstr ""
+msgstr "csdcscs"
 
 #: .\accounts\models.py:7
 msgid "admin"
-msgstr ""
+msgstr "csdcscs"
 
 #: .\accounts\models.py:7
 msgid "afitsant"
-msgstr ""
+msgstr "cscs"
 
 #: .\accounts\models.py:7
 msgid "kassir"
@@ -55,15 +55,15 @@ msgstr ""
 
 #: .\common\models.py:5
 msgid "bajarildi"
-msgstr ""
+msgstr "cscsdcsdc"
 
 #: .\common\models.py:6
 msgid "kirim"
-msgstr ""
+msgstr " sdcsdcsdcs"
 
 #: .\common\models.py:6
 msgid "chiqim"
-msgstr ""
+msgstr "sdcsdcs"
 
 #: .\common\models.py:24
 msgid "stol"
