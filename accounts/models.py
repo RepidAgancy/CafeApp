@@ -20,7 +20,7 @@ class User(AbstractUser, BaseModel):
         (COOKER, COOKER)
     )
     type = models.CharField(max_length=50, choices=USER_TYPE)
-    profile_image = models.ImageField(upload_to='accounts/images/profile/%Y/%m/%d/',null=True, blank=True)
+    profile_image = models.ImageField(upload_to='accounts/images/',null=True, blank=True)
     phone_number = models.CharField(max_length=20, unique=True, null=True, blank=True)
     work_experience = models.CharField(max_length=250)
     salary = models.PositiveIntegerField(default=0)
@@ -36,26 +36,20 @@ class User(AbstractUser, BaseModel):
 
     def save(self, *args, **kwargs):
         if self.profile_image:
-            # Faylni o'qish
             image = Image.open(self.profile_image)
-            image = image.convert("RGB")  # RGB formatga o'tkazish (WebP faqat RGB-ni qo'llab-quvvatlaydi)
-
-            # Rasmning maksimal o'lchamini belgilash (masalan, 1024x1024)
-            max_size = (1024, 1024)  # Rasmning maksimal o'lchamini 1024x1024 px qilish
+            image = image.convert("RGB")
+            max_size = (1024, 1024)
             image.thumbnail(max_size, Image.Resampling.LANCZOS)
 
-            # Faylni WebP formatida saqlash (sifatni kamaytirish)
             buffer = BytesIO()
-            image.save(buffer, format='WEBP', quality=80, optimize=True)  # 80% sifatda saqlash
-            buffer.seek(0)  # Faylni boshidan o'qish
+            image.save(buffer, format='WEBP', quality=80, optimize=True)
+            buffer.seek(0)
 
-            # Yangi WebP formatidagi faylni saqlash
-            new_image_name = f"{self.profile_image.name.split('.')[0]}.webp"  # Yangi nom (webp formatida)
+            new_image_name = f"{self.profile_image.name.split('.')[0]}.webp"
             self.profile_image.save(
                 new_image_name,
-                ContentFile(buffer.read()),  # Yangi faylni saqlash
-                save=False  # Django avtomatik saqlashni oldini olish
+                ContentFile(buffer.read()),
+                save=False
             )
 
-        # Super metodni chaqirish
         super().save(*args, **kwargs)
