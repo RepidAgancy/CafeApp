@@ -119,7 +119,7 @@ class ProductCartSerializer(serializers.ModelSerializer):
 class ProductOrderCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.OrderProduct
-        fields = ['cart', 'status']
+        fields = ['cart',]
 
     def validate(self, data):
         user = self.context['request'].user
@@ -133,6 +133,10 @@ class ProductOrderCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         cart = models.CartProduct.objects.get(pk=validated_data['cart'])
+        if not models.CartItemProduct.objects.filter(cart=cart).exists():
+            return {
+                'message': 'You cannot create order'
+            }
         order = models.OrderProduct.objects.create(cart=cart, status=models.NOT_APPROVED, type=models.EXPENSE)
         cart.is_confirm = True
         cart.save()

@@ -206,6 +206,10 @@ class OrderCreateSerializer(serializers.ModelSerializer):
                 status=models.IN_PROCESS,
             )
         cart = order.cart
+        if not models.CartItem.objects.filter(cart=cart).exists():
+            return {
+                'message': 'You cannot create an order',
+            }
         cart.is_confirm = True
         cart.save()
         return {
