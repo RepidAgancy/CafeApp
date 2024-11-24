@@ -7,6 +7,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 
 from common.models import BaseModel
+from accounts.utils import WebpImageField
 
 ADMIN, WAITER, CASHIER, STOREKEEPER, COOKER = (_('admin'), _('ofitsant'), _('kassir'), _('omborchi'),_('oshpaz'))
 
@@ -20,7 +21,7 @@ class User(AbstractUser, BaseModel):
         (COOKER, COOKER)
     )
     type = models.CharField(max_length=50, choices=USER_TYPE)
-    profile_image = models.ImageField(upload_to='accounts/images/profile/%Y/%m/%d/',null=True, blank=True)
+    profile_image = WebpImageField(upload_to='accounts/images/profile/%Y/%m/%d/',null=True, blank=True)
     phone_number = models.CharField(max_length=20, unique=True, null=True, blank=True)
     work_experience = models.CharField(max_length=250)
     salary = models.PositiveIntegerField(default=0)
@@ -35,18 +36,8 @@ class User(AbstractUser, BaseModel):
         return [choice[1] for choice in cls.USER_TYPE]
 
     def save(self, *args, **kwargs):
-        # Asl faylni webp formatga o'zgartirish
         if self.profile_image:
-            image = Image.open(self.profile_image)
-            image = image.convert("RGB")
-            buffer = BytesIO()
-            image.save(buffer, format='WEBP', quality=80)
-            buffer.seek(0)
-
-            self.profile_image.save(
-                f"{self.profile_image.name.split('.')[0]}.webp",
-                ContentFile(buffer.read()),
-                save=False
-            )
+            # Ensure WebP conversion on save
+            self.image = self.profile_image.file  # Access file object
         super().save(*args, **kwargs)
 
