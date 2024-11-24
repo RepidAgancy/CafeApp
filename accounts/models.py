@@ -46,7 +46,7 @@ class User(AbstractUser, BaseModel):
 
             # Faylni WebP formatida saqlash (sifatni kamaytirish)
             buffer = BytesIO()
-            image.save(buffer, format='WEBP', quality=60, optimize=True)  # 80% sifatda saqlash
+            image.save(buffer, format='WEBP', quality=80, optimize=True)  # 80% sifatda saqlash
             buffer.seek(0)  # Faylni boshidan o'qish
 
             # Yangi WebP formatidagi faylni saqlash

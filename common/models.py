@@ -52,21 +52,30 @@ class Food(BaseModel):
         return f'{self.name} - {self.price} UZS'
 
     def save(self, *args, **kwargs):
-        # Asl faylni webp formatga o'zgartirish
         if self.image:
+            # Faylni o'qish
             image = Image.open(self.image)
-            image = image.convert("RGB")
+            image = image.convert("RGB")  # RGB formatga o'tkazish (WebP faqat RGB-ni qo'llab-quvvatlaydi)
+
+            # Rasmning maksimal o'lchamini belgilash (masalan, 1024x1024)
+            max_size = (1024, 1024)  # Rasmning maksimal o'lchamini 1024x1024 px qilish
+            image.thumbnail(max_size, Image.Resampling.LANCZOS)
+
+            # Faylni WebP formatida saqlash (sifatni kamaytirish)
             buffer = BytesIO()
-            image.save(buffer, format='WEBP', quality=80)
-            buffer.seek(0)
+            image.save(buffer, format='WEBP', quality=80, optimize=True)  # 80% sifatda saqlash
+            buffer.seek(0)  # Faylni boshidan o'qish
 
+            # Yangi WebP formatidagi faylni saqlash
+            new_image_name = f"{self.image.name.split('.')[0]}.webp"  # Yangi nom (webp formatida)
             self.image.save(
-                f"{self.image.name.split('.')[0]}.webp",
-                ContentFile(buffer.read()),
-                save=False
+                new_image_name,
+                ContentFile(buffer.read()),  # Yangi faylni saqlash
+                save=False  # Django avtomatik saqlashni oldini olish
             )
-        super().save(*args, **kwargs)
 
+        # Super metodni chaqirish
+        super().save(*args, **kwargs)
     class Meta:
         verbose_name = _('toam')
         verbose_name_plural = _('toamlar')
