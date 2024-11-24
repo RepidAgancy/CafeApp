@@ -3,7 +3,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status, views
 from rest_framework.response import Response
 
-from crm.pagination import CustomPagination
 from common import models, serializers, permissions, filters
 
 

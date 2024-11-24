@@ -127,3 +127,20 @@ class GetUnitStatusApiView(views.APIView):
             'status': models.CartItemProduct.get_unit_status()
         }
         return Response(data)
+
+
+class ProductListByCategoryApiView(generics.GenericAPIView):
+    permission_classes = [permissions.IsStorekeeper]
+    serializer_class = serializers.ProductListByCategorySerializer
+    pagination_class = None
+
+    def get(self, request, category_id):
+        try:
+            category = models.CategoryProduct.objects.get(id=category_id)
+        except models.CategoryProduct.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        products = models.Product.objects.filter(category=category)
+
+        serializer = self.get_serializer(products, many=True)
+        return Response(serializer.data)

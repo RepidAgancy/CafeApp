@@ -5,6 +5,7 @@ from product import views
 urlpatterns = [
     # product category
     path('product-category/list/', views.ProductCategoryListApiView.as_view(), name='product-category-list'),
+    path('product-category/<category_id>/', views.ProductListByCategoryApiView.as_view(), name='product-category-list'),
     # product
     path('product/create/', views.ProductCreateApiView.as_view(), name='product-create'),
     path('product/list/', views.ProductListApiView.as_view(), name='product-category-list'),

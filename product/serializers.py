@@ -207,3 +207,10 @@ class ProductCreateSerializer(serializers.Serializer):
         return {
             'message': 'Product is successfully created',
         }
+
+class ProductListByCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Product
+        fields = [
+            'id', 'name', 'image', 'price',
+        ]
