@@ -31,6 +31,7 @@ class FoodListApiView(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = filters.FoodFilter
     pagination_class = None
+    permission_classes = [permissions.IsCashierOrWaiter]
 
 
 class FoodDetailApiView(generics.RetrieveAPIView):
