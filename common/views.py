@@ -59,7 +59,7 @@ class FoodListByCategoryApiView(generics.GenericAPIView):
         except models.CategoryFood.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        foods = models.Food.objects.filter(category=category)
+        foods = models.Food.objects.filter(category=category).select_related('category')
 
         page = self.paginate_queryset(foods)  # Apply pagination to the queryset
         if page is not None:
