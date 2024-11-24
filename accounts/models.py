@@ -35,18 +35,27 @@ class User(AbstractUser, BaseModel):
         return [choice[1] for choice in cls.USER_TYPE]
 
     def save(self, *args, **kwargs):
-        # Asl faylni webp formatga o'zgartirish
         if self.profile_image:
+            # Faylni o'qish
             image = Image.open(self.profile_image)
-            image = image.convert("RGB")
+            image = image.convert("RGB")  # SVG faqat RGB-ni qo'llab-quvvatlaydi, lekin bu muhim emas
+
+            # Rasmning maksimal o'lchamini belgilash (masalan, 1024x1024)
+            max_size = (1024, 1024)  # Rasmning maksimal o'lchamini 1024x1024 px qilish
+            image.thumbnail(max_size, Image.Resampling.LANCZOS)
+
+            # SVG formatida saqlash (rasmni vektorlashtirishni o'z ichiga olmaydi)
             buffer = BytesIO()
-            image.save(buffer, format='WEBP', quality=80)
+            image.save(buffer, format='PNG')
             buffer.seek(0)
 
+            # Yangi SVG formatidagi faylni saqlash
+            new_image_name = f"{self.profile_image.name.split('.')[0]}.png"  # Yangi nom (SVG formatida)
             self.profile_image.save(
-                f"{self.profile_image.name.split('.')[0]}.webp",
-                ContentFile(buffer.read()),
-                save=False
+                new_image_name,
+                ContentFile(buffer.read()),  # Yangi faylni saqlash
+                save=False  # Django avtomatik saqlashni oldini olish
             )
-        super().save(*args, **kwargs)
 
+        # Super metodni chaqirish
+        super().save(*args, **kwargs)
