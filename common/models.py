@@ -26,7 +26,7 @@ class Table(BaseModel):
 
 
 class CategoryFood(BaseModel):
-    image = models.ImageField(upload_to='common/category/image/%Y/%m/%d')
+    image = models.ImageField(upload_to='common/category/')
     name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
@@ -39,7 +39,7 @@ class CategoryFood(BaseModel):
 
 class Food(BaseModel):
     name = models.CharField(max_length=50)
-    image = models.ImageField(upload_to='common/food/image/%Y/%m/%d')
+    image = models.ImageField(upload_to='common/food/')
     price = models.PositiveIntegerField()
     category = models.ForeignKey(CategoryFood, on_delete=models.CASCADE, related_name='food')
     food_info = models.TextField()
