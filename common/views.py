@@ -214,7 +214,7 @@ class OrderIsConfirmListApiView(generics.ListAPIView):
     pagination_class = None
 
     def get_queryset(self):
-        return models.Order.objects.filter(cart__user=self.request.user, is_confirmed=True)
+        return models.Order.objects.filter(cart__user=self.request.user, is_confirm=True)
 
 
 class OrderIsNotConfirmListApiView(generics.ListAPIView):
