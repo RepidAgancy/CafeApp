@@ -50,7 +50,7 @@ class FoodListSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Food
         fields = [
-            'id', 'name_uz', 'name_ru', 'name_en' 'image', 'price',
+            'id', 'name_uz', 'name_ru', 'name_en', 'image', 'price',
         ]
 
 

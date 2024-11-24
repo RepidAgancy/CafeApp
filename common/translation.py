@@ -6,8 +6,9 @@ class CategoryModelTranslation(TranslationOptions):
     fields = ('name',)
 
 
+
 class FoodModelTranslation(TranslationOptions):
-    fields = ('food_info',)
+    fields = ('name', 'food_info',)
 
 
 translator.register(models.CategoryFood, CategoryModelTranslation)
