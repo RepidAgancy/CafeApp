@@ -50,7 +50,7 @@ class FoodListSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Food
         fields = [
-            'id', 'name', 'image', 'price',
+            'id', 'name_uz', 'name_ru', 'name_en' 'image', 'price',
         ]
 
 
@@ -58,7 +58,7 @@ class FoodDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Food
         fields = [
-            'id', 'name', 'image', 'price',
+            'id', 'name_uz', 'name_ru', 'name_en',  'image', 'price',
             'food_info_uz','food_info_ru', 'food_info_en',
         ]
 
@@ -75,7 +75,7 @@ class FoodListByCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Food
         fields = [
-            'id', 'name', 'image', 'price',
+            'id', 'name_uz', 'name_ru', 'name_en', 'image', 'price',
         ]
 
 
