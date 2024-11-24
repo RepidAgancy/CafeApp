@@ -238,8 +238,6 @@ class OrderChangeStatusSerializer(serializers.Serializer):
     def save(self, *args, **kwargs):
         order = models.Order.objects.get(id=self.validated_data['order_id'])
         order.status = models.DONE
-        order.cart.table.type = models.DONE
-        order.cart.table.save()
         order.save()
 
         return {
@@ -281,6 +279,8 @@ class OrderFoodConfirmSerializer(serializers.Serializer):
     def save(self, *args, **kwargs):
         order = models.Order.objects.get(id=self.validated_data['order_id'])
         order.is_confirm = True
+        order.cart.table.is_busy = False
+        order.cart.table.save()
         order.save()
 
         return {
