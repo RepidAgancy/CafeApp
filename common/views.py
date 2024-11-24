@@ -166,7 +166,7 @@ class OrderListIsDoneApiView(generics.GenericAPIView):
     pagination_class = None
 
     def get(self, request):
-        order = models.Order.objects.filter(status=models.DONE, cart__user=request.user)
+        order = models.Order.objects.filter(status=models.DONE, cart__user=request.user, is_confirm=False)
         serializer = self.get_serializer(order, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
