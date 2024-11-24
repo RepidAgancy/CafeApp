@@ -1,5 +1,9 @@
+from io import BytesIO
+
+from PIL import Image
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.core.files.base import ContentFile
 
 
 IN_PROCESS, DONE = (_('jarayonda'), _('bajarildi'))
@@ -46,6 +50,22 @@ class Food(BaseModel):
 
     def __str__(self):
         return f'{self.name} - {self.price} UZS'
+
+    def save(self, *args, **kwargs):
+        # Asl faylni webp formatga o'zgartirish
+        if self.image:
+            image = Image.open(self.image)
+            image = image.convert("RGB")
+            buffer = BytesIO()
+            image.save(buffer, format='WEBP', quality=80)
+            buffer.seek(0)
+
+            self.image.save(
+                f"{self.image.name.split('.')[0]}.webp",
+                ContentFile(buffer.read()),
+                save=False
+            )
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = _('toam')
