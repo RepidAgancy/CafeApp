@@ -1,3 +1,7 @@
+from io import BytesIO
+
+from PIL import Image
+from django.core.files.base import ContentFile
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
@@ -30,4 +34,19 @@ class User(AbstractUser, BaseModel):
     def get_user_type_list(cls):
         return [choice[1] for choice in cls.USER_TYPE]
 
+    def save(self, *args, **kwargs):
+        # Asl faylni webp formatga o'zgartirish
+        if self.profile_image:
+            image = Image.open(self.profile_image)
+            image = image.convert("RGB")
+            buffer = BytesIO()
+            image.save(buffer, format='WEBP', quality=80)
+            buffer.seek(0)
+
+            self.profile_image.save(
+                f"{self.profile_image.name.split('.')[0]}.webp",
+                ContentFile(buffer.read()),
+                save=False
+            )
+        super().save(*args, **kwargs)
 
