@@ -38,19 +38,19 @@ class User(AbstractUser, BaseModel):
         if self.profile_image:
             # Faylni o'qish
             image = Image.open(self.profile_image)
-            image = image.convert("RGB")  # SVG faqat RGB-ni qo'llab-quvvatlaydi, lekin bu muhim emas
+            image = image.convert("RGB")  # RGB formatga o'tkazish (WebP faqat RGB-ni qo'llab-quvvatlaydi)
 
             # Rasmning maksimal o'lchamini belgilash (masalan, 1024x1024)
             max_size = (1024, 1024)  # Rasmning maksimal o'lchamini 1024x1024 px qilish
             image.thumbnail(max_size, Image.Resampling.LANCZOS)
 
-            # SVG formatida saqlash (rasmni vektorlashtirishni o'z ichiga olmaydi)
+            # Faylni WebP formatida saqlash (sifatni kamaytirish)
             buffer = BytesIO()
-            image.save(buffer, format='PNG')
-            buffer.seek(0)
+            image.save(buffer, format='WEBP', quality=80, optimize=True)  # 80% sifatda saqlash
+            buffer.seek(0)  # Faylni boshidan o'qish
 
-            # Yangi SVG formatidagi faylni saqlash
-            new_image_name = f"{self.profile_image.name.split('.')[0]}.png"  # Yangi nom (SVG formatida)
+            # Yangi WebP formatidagi faylni saqlash
+            new_image_name = f"{self.profile_image.name.split('.')[0]}.webp"  # Yangi nom (webp formatida)
             self.profile_image.save(
                 new_image_name,
                 ContentFile(buffer.read()),  # Yangi faylni saqlash
