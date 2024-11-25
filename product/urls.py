@@ -14,7 +14,8 @@ urlpatterns = [
     path('cart-item/<int:cart_item_id>/update/', views.ProductCartItemUpdateApiView.as_view(), name='product-cart-item-update'),
     path('cart-item/<int:id>/delete/', views.ProductCartItemDeleteApiView.as_view(), name='product-cart-item-delete'),
     # cart
-    path('cart/create/', views.GetOrderApiView.as_view(), name='get_order'),
+    path('cart/create/', views.GetOrderApiView.as_view(), name='create-cart'),
+    path('cart/<int:id>/', views.ProductCartDetailApiView.as_view(), name='get-cart'),
     # order
     path('order/create/', views.ProductOrderCreateApiView.as_view(), name='product-order-create'),
     path('order/confirm/', views.ProductOrderConfirmApiView.as_view(), name='product-order-confirm'),

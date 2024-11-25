@@ -9,7 +9,8 @@ from accounts.models import User
 from common.models import BaseModel, EXPENSE, PROFIT
 
 KG, PIECE = ('kg', _('dona'))
-APPROVED, NOT_APPROVED  = ('tasdiqlangan', 'tasdiqlanmagan')
+APPROVED, NOT_APPROVED = ('tasdiqlangan', 'tasdiqlanmagan')
+
 
 class CategoryProduct(BaseModel):
     name = models.CharField(max_length=100)
@@ -27,28 +28,23 @@ class Product(BaseModel):
 
     def save(self, *args, **kwargs):
         if self.image:
-            # Faylni o'qish
             image = Image.open(self.image)
-            image = image.convert("RGB")  # RGB formatga o'tkazish (WebP faqat RGB-ni qo'llab-quvvatlaydi)
+            image = image.convert("RGB")
 
-            # Rasmning maksimal o'lchamini belgilash (masalan, 1024x1024)
-            max_size = (1024, 1024)  # Rasmning maksimal o'lchamini 1024x1024 px qilish
+            max_size = (1024, 1024)
             image.thumbnail(max_size, Image.Resampling.LANCZOS)
 
-            # Faylni WebP formatida saqlash (sifatni kamaytirish)
             buffer = BytesIO()
-            image.save(buffer, format='WEBP', quality=80, optimize=True)  # 80% sifatda saqlash
-            buffer.seek(0)  # Faylni boshidan o'qish
+            image.save(buffer, format='WEBP', quality=80, optimize=True)
+            buffer.seek(0)
 
-            # Yangi WebP formatidagi faylni saqlash
-            new_image_name = f"{self.image.name.split('.')[0]}.webp"  # Yangi nom (webp formatida)
+            new_image_name = f"{self.image.name.split('.')[0]}.webp"
             self.image.save(
                 new_image_name,
-                ContentFile(buffer.read()),  # Yangi faylni saqlash
-                save=False  # Django avtomatik saqlashni oldini olish
+                ContentFile(buffer.read()),
+                save=False
             )
 
-        # Super metodni chaqirish
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -65,7 +61,7 @@ class CartProduct(BaseModel):
     is_confirm = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.total_price} - umumiy chiqib'
+        return f'{self.total_price} - umumiy chiqim'
 
     class Meta:
         verbose_name = _('savatdagi mahsulot')

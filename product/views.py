@@ -5,11 +5,13 @@ from rest_framework.response import Response
 from product import models, serializers, permissions, filters
 
 
-class ProductCategoryListApiView(generics.ListAPIView):
-    serializer_class = serializers.ProductCategoryListSerializer
-    queryset = models.CategoryProduct.objects.all()
+class ProductCategoryListApiView(views.APIView):
     permission_classes = [permissions.IsStorekeeper, ]
-    pagination_class = None
+
+    def get(self, request):
+        categories = models.CategoryProduct.objects.all()
+        serializer = serializers.ProductCategoryListSerializer(categories, many=True)
+        return Response(serializer.data)
 
 
 class ProductListApiView(generics.ListAPIView):
@@ -25,7 +27,6 @@ class GetOrderApiView(views.APIView):
     permission_classes = [permissions.IsStorekeeper, ]
 
     def post(self, request):
-
         cart = models.CartProduct.objects.create(
             user=request.user,
         )
@@ -72,6 +73,18 @@ class ProductCartItemDeleteApiView(generics.GenericAPIView):
         return Response({'message': 'Cart Item successfully deleted'}, status=status.HTTP_204_NO_CONTENT)
 
 
+class ProductCartDetailApiView(generics.GenericAPIView):
+    permission_classes = [permissions.IsStorekeeper,]
+    serializer_class = serializers.ProductCartSerializer
+
+    def get(self, request, id):
+        cart = models.CartProduct.objects.filter(id=id).first()
+        if cart:
+            serializer = self.get_serializer(cart)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({'message': 'Cart is not defined'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class ProductOrderCreateApiView(generics.GenericAPIView):
     serializer_class = serializers.ProductOrderCreateSerializer
     permission_classes = [permissions.IsStorekeeper, ]
@@ -104,7 +117,7 @@ class ProductOrderIsConfirmApiView(generics.ListAPIView):
 class ProductOrderIsNotConfirmApiView(generics.ListAPIView):
     serializer_class = serializers.ProductOrderListSerializer
     permission_classes = [permissions.IsStorekeeper, ]
-    queryset = models.OrderProduct.objects.filter(is_confirm=False)
+    queryset = models.OrderProduct.objects.filter(is_confirm=True)
     pagination_class = None
 
 

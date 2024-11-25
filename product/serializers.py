@@ -1,6 +1,8 @@
+from django.utils import timezone
 from rest_framework import serializers
 
 from product import models
+
 
 class ProductCategoryListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -19,32 +21,25 @@ class ProductCartItemCreateSerializer(serializers.ModelSerializer):
         model = models.CartItemProduct
         fields = ['product', 'weight', 'unit_status', 'cart', 'date', 'time']
         extra_kwargs = {
-            'data': {'required': True}, 'time': {'required': True}
+            'data': {'required': True}, 'time': {'required': True},
         }
-    def validate(self, data):
-        user = self.context['request'].user
-        try:
-            product = models.Product.objects.get(pk=data['product'])
-            cart = models.CartProduct.objects.get(pk=data['cart'])
-        except models.Product.DoesNotExist:
-            raise serializers.ValidationError({"message": "Product does not exist"})
-        except models.CartProduct.DoesNotExist:
-            raise serializers.ValidationError({"message": "CartProduct does not exist"})
-        if cart.user != user:
-            raise serializers.ValidationError({'message': 'Cart user is not the requested user'})
-        return data
 
     def create(self, validated_data):
+        cart = models.CartProduct.objects.get(pk=self.data['cart'])
+        product = models.Product.objects.get(pk=self.data['product'])
         cart_item = models.CartItemProduct.objects.create(
-            product=models.Product.objects.get(pk=self.data['product']),
-            cart=models.CartProduct.objects.get(pk=self.data['cart']),
+            product=product,
+            cart=cart,
             weight=validated_data['weight'],
             unit_status=validated_data['unit_status'],
-            date=validated_data['date'],
+            date=validated_data['date'] if validated_data['date'] else timezone.now().date,
             time=validated_data['time'],
         )
+        price = product.price * validated_data['weight']
+        cart.total_price += price
+        cart.save()
         return {
-            'product': cart_item.product,
+            'product': ProductListSerializer(cart_item.product).data,
             'cart': {
                 'id': cart_item.id,
                 'user': cart_item.cart.user.id,
@@ -94,13 +89,15 @@ class ProductItemEditSerializer(serializers.ModelSerializer):
 
 class ProductCartItemSerializer(serializers.ModelSerializer):
     price = serializers.SerializerMethodField(method_name='get_price')
+    product_name = serializers.CharField(source='product.name')
+    product_image = serializers.CharField(source='product.image.url')
 
     class Meta:
         model = models.CartItemProduct
-        fields = ['product', 'weight', 'unit_status', 'date', 'time', 'price']
+        fields = ['id', 'product_name', 'product_image', 'weight', 'unit_status', 'price']
 
     def get_price(self, obj):
-        return f'{obj.product.price} uzs'
+        return obj.product.price
 
 
 class ProductCartSerializer(serializers.ModelSerializer):
@@ -108,11 +105,11 @@ class ProductCartSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.CartProduct
-        fields = ['id', 'cart_item',]
+        fields = ['id', 'total_price', 'cart_item',]
 
     def get_cart_item(self, obj):
         cart = models.CartProduct.objects.get(pk=obj.id)
-        cart_item = models.CartProduct.objects.get(cart=cart)
+        cart_item = models.CartItemProduct.objects.filter(cart=cart)
         return ProductCartItemSerializer(cart_item, many=True).data
 
 
@@ -121,31 +118,30 @@ class ProductOrderCreateSerializer(serializers.ModelSerializer):
         model = models.OrderProduct
         fields = ['cart',]
 
-    def validate(self, data):
-        user = self.context['request'].user
-        try:
-            cart = models.CartProduct.objects.get(pk=data['cart'])
-        except models.CartProduct.DoesNotExist:
-            raise serializers.ValidationError({"message": "CartProduct does not exist"})
-        if cart.user != user:
-            raise serializers.ValidationError({"message": "You are not allowed to create order"})
-        return data
-
     def create(self, validated_data):
-        cart = models.CartProduct.objects.get(pk=validated_data['cart'])
+        try:
+            order = models.OrderProduct.objects.get(
+                cart=validated_data['cart'], status=models.NOT_APPROVED, type=models.EXPENSE
+            )
+        except models.OrderProduct.DoesNotExist:
+            order = models.OrderProduct.objects.create(
+                cart=validated_data['cart'],
+                status=models.NOT_APPROVED,
+                type=models.EXPENSE
+            )
+        cart = order.cart
         if not models.CartItemProduct.objects.filter(cart=cart).exists():
             return {
-                'message': 'You cannot create order'
+                'message': 'You cannot create an order',
             }
-        order = models.OrderProduct.objects.create(cart=cart, status=models.NOT_APPROVED, type=models.EXPENSE)
         cart.is_confirm = True
         cart.save()
         return {
-            'id': f'#{order.id}',
-            'cart': ProductCartSerializer(order.cart).data,
-            'date': order.created_at.date,
-            'time': order.created_at.time,
-            'storekeeper': order.cart.user,
+            'id': order.id,
+            'cart': ProductCartSerializer(cart).data,
+            'date': order.created_at.date().isoformat(),
+            'time': order.created_at.time().isoformat(),
+            'storekeeper': order.cart.user.username,
             'total_price': order.cart.total_price,
         }
 

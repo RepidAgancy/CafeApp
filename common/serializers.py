@@ -116,6 +116,7 @@ class CartItemCreateSerializer(serializers.Serializer):
             'quantity': cart_item.quantity,
         }
 
+
 class CartItemUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CartItem
