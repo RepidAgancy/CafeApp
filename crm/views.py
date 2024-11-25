@@ -1,4 +1,4 @@
-from datetime import timedelta, datetime
+from datetime import datetime, date, timedelta
 from django.db.models import Sum
 from django.db.models.functions import ExtractMonth
 from django.utils import timezone
@@ -13,7 +13,7 @@ from crm import serializers, models, permissions
 from crm.pagination import CustomPagination
 from crm.models import Payment
 from product.models import OrderProduct, APPROVED, Product, CartItemProduct
-from common.models import Order, PROFIT, EXPENSE, DONE, Food, CategoryFood
+from common.models import Order, PROFIT, EXPENSE, DONE, Food, CategoryFood, CartItem
 from accounts.models import User, WAITER, CASHIER, ADMIN
 import polib
 from django.http import JsonResponse
@@ -36,40 +36,12 @@ def get_translations(request, lang_code):
 class StatisticsApiView(generics.GenericAPIView):
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = serializers.StartandEndDateSerializer
-
-    def get(self, request):
-        today = timezone.now().date()
-        expance_ordersproduct_until_today = OrderProduct.objects.filter(type=EXPENSE, is_confirm=True, status=APPROVED,
-                                                    created_at__date__lte=today)
-        expance_payment_until_today = Payment.objects.filter(type=EXPENSE, created_at__date__lte=today)
-        income_orders_today = Order.objects.filter(type=PROFIT, is_confirm=True, status=DONE, created_at__date__lte=today)
-
-        total_expense_today = sum(order.cart.total_price for order in expance_ordersproduct_until_today)
-        total_expense_today += sum(payment.price for payment in expance_payment_until_today)
-        total_income_today = sum(order.cart.total_price for order in income_orders_today)
-        employees = User.objects.count()
-        customers_today = Order.objects.filter(is_confirm=True, status=DONE, created_at__date__lte=today).count()
-
-        data = {
-            'total_income': {
-                'value': total_income_today,
-                # 'percentage': income_change_percentage,
-            },
-            'total_expense': {
-                'value': total_expense_today,
-                # 'percentage': expense_change_percentage,
-            },
-            'employees': employees,
-            'customers_today': customers_today,
-        }
-
-        return Response(data)
     
     def post(self, request,*args,**kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        start_date = serializer.validated_data.get('start_date',"2024-09-09")
+        start_date = serializer.validated_data.get('start_date',(datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d"))
         end_date = serializer.validated_data.get('end_date', datetime.now().strftime("%Y-%m-%d"))
 
 
@@ -82,7 +54,7 @@ class StatisticsApiView(generics.GenericAPIView):
         total_expance_sofar += sum(payment.price for payment in expance_payment_until_today)
         total_income_sofar = sum(order.cart.total_price for order in income_orders_today)
 
-        employees = User.objects.filter(created_at__date__range=(start_date, end_date)).count()
+        employees = User.objects.exclude(type=ADMIN).count()
         customers = Order.objects.filter(
             is_confirm=True, status=DONE,
             created_at__date__range=(start_date, end_date)
@@ -307,11 +279,33 @@ class FoodDeleteApiView(views.APIView):
         return Response({'message': 'Food successfully deleted'}, status=status.HTTP_204_NO_CONTENT)
 
 
-class ProductListApiView(generics.ListAPIView):
-    queryset = Product.objects.all()
-    serializer_class = serializers.ProductSerializer
+class ProductApiView(generics.GenericAPIView):
+    serializer_class = serializers.StartandEndDateSerializer
     permission_classes = (permissions.IsAdminUser,)
-    pagination_class = None
+
+    def post(self, request):
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        start_date = serializer.validated_data.get('start_date',0)
+        end_date = serializer.validated_data.get('end_date', 0)
+
+        if start_date == 0 and end_date == 0:
+            products = CartItemProduct.objects.all()
+        else:
+            
+            products = CartItemProduct.objects.filter( 
+                created_at__date__range=(start_date, end_date)
+                )
+
+        if not products.exists():
+            return Response(
+                {"detail": "No products found for the given date."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        serializer = serializers.ProductListSerializers(products, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class PaymentEmployeeSalaryCreateApiView(generics.GenericAPIView):
@@ -348,3 +342,104 @@ class PaymentCategoryApiView(views.APIView):
             'payment_type': payment_type,
         }
         return Response(data)
+    
+       
+class WaiterListView(generics.ListAPIView):
+    permission_classes = (permissions.IsAdminUser, )
+    serializer_class = serializers.UserListSerializer
+    queryset = User.objects.filter(type=WAITER)
+    pagination_class = None
+
+
+class WaiterHistoryOrderDetail(generics.GenericAPIView):
+    permission_classes = (permissions.IsAdminUser, )
+    serializer_class = serializers.StartandEndDateSerializer
+
+    def get_queryset(self):
+        # Access query parameters
+        employee_id = self.request.query_params.get('employeeId', None)
+        start_date = self.request.query_params.get('startDate', None)
+        end_date = self.request.query_params.get('endDate', None)
+
+
+        filters = {}
+        if start_date and end_date:
+            filters["created_at__date__range"] = (start_date, end_date)
+        elif start_date or end_date:
+            filters["created_at__date"] = date.today()
+        
+        if employee_id:
+            filters = {"cart__user_id": employee_id}
+
+        return Order.objects.filter(**filters)
+
+    def get(self, request):
+        # Validate query parameters
+        serializer = self.serializer_class(data=request.query_params)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            # Use the queryset retrieved from `get_queryset`
+            orders = self.get_queryset()
+
+            if not orders.exists():
+                return Response(
+                    {"detail": "No orders found for the given filters."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            # Serialize and return orders
+            serializer = serializers.WaiterHistoryDetailSerializer(orders, many=True)
+            return Response({
+                "count": orders.count(),
+                "orders": serializer.data
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"detail": "An error occurred while fetching orders.", "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        
+
+class FoodRatingApiView(generics.GenericAPIView):
+    serializer_class = serializers.StartandEndDateSerializer
+    permission_classes = (permissions.IsAdminUser, )
+
+    def get_queryset(self):
+        food_id = self.request.query_params.get('foodId', None)
+        start_date = self.request.query_params.get('startDate', None)
+        end_date = self.request.query_params.get('endDate', None)
+
+        filters = {"cart__items__food__id": food_id}
+
+        if start_date and end_date:
+            filters["created_at__date__range"] = (start_date, end_date)
+        elif start_date==0 and end_date==0:
+            filters["created_at__date__lte"] = date.today()
+
+        return Order.objects.filter(**filters)
+
+    def get(self, request):
+
+        serializer = self.serializer_class(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        try:
+            orders_food = self.get_queryset()
+
+            if not orders_food.exists():
+                return Response(
+                    {"detail": "No dishes found for the given date."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            serializer = serializers.WaiterHistoryDetailSerializer(orders_food, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            # Handle unexpected errors
+            return Response(
+                {"detail": "An error occurred while fetching orders.", "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

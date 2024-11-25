@@ -4,16 +4,16 @@ from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 
 from common import models as common_models
-from accounts.models import User
+from accounts.models import User, WAITER
 from crm import models
-from product.models import Product
+from product.models import Product, CartItemProduct, CartProduct
 
 
 class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = [
-            'id', 'first_name', 'last_name', 'phone_number','profile_image', 'work_experience', 'salary','type'
+            'id', 'first_name', 'last_name', 'phone_number','profile_image', 'work_experience', 'salary','type','username',
         ]
 
 
@@ -146,14 +146,39 @@ class FoodCreateUpdateSerializer(serializers.ModelSerializer):
 
         return data
 
-    
+
     
 class ProductSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name')
+
     class Meta:
         model = Product
         fields = [
-            'id', 'name_uz', 'name_ru', 'name_en', 'image', 'price', 'category', 'category_name'
+            'id', 'name_uz', 'name_ru', 'name_en', 'image', 'price', 'category', 'category_name',
+        ]
+
+
+class CartProductsSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField(method_name='get_user')
+
+    class Meta:
+        model = CartProduct
+        fields = (
+            'id', 'user', 'total_price', 'is_confirm'
+        )
+    def get_user(self, obj):
+        return obj.user.username
+
+
+
+class ProductListSerializers(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+    cart = CartProductsSerializer(read_only=True)
+
+    class Meta:
+        model = CartItemProduct
+        fields = [
+            'id', 'product', 'weight', 'unit_status','date', 'time', 'cart'
         ]
 
 
@@ -198,3 +223,59 @@ class PaymentHistoryListSerializer(serializers.ModelSerializer):
 
     def get_payment_type(self, obj):
         return obj.category if obj.category else None
+    
+
+class WaiterHistoryOrderSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField(method_name='get_user')
+    total_price = serializers.SerializerMethodField(method_name='get_total_price')
+    table_number = serializers.SerializerMethodField(method_name='get_table_number')
+
+    class Meta:
+        model = common_models.Order 
+        fields = [
+            'id', 'user', 'total_price', 'table_number', 'status', 'cart'
+        ]
+    
+    def get_user(self, obj):
+        if obj.cart.user.type == WAITER:
+            return obj.cart.user.username
+        
+    def get_total_price(self, obj):
+        return obj.cart.total_price
+
+    def get_table_number(self, obj):
+        return obj.cart.table.number
+
+
+class CartsItemSerializer(serializers.ModelSerializer):
+    food_name = serializers.SerializerMethodField(method_name='get_food_name')
+
+    class Meta:
+        model = common_models.CartItem
+        fields = ['id', 'food_name', 'quantity']
+
+    def get_food_name(self, obj):
+        return obj.food.name
+
+class CartsSerializer(serializers.ModelSerializer):
+    items = CartsItemSerializer(many=True, read_only=True)
+    user = serializers.SerializerMethodField(method_name='get_user')
+
+    class Meta:
+        model = common_models.Cart
+        fields = [
+            'id', 'table', 'total_price', 'is_confirm', 'items', 'user'
+            ]
+    def get_user(self, obj):
+        if obj.user.type==WAITER:
+            return obj.user.username
+
+
+class WaiterHistoryDetailSerializer(serializers.ModelSerializer):
+    cart = CartsSerializer(read_only=True)
+
+    class Meta:
+        model = common_models.Order
+        fields = [
+            'id', 'status', 'cart', 'created_at',
+        ]
