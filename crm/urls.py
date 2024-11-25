@@ -35,5 +35,4 @@ urlpatterns = [
     #waiter list for statistics
     path('waiter-list/', views.WaiterListView.as_view(), name='waiter-list'),
     path('waiterhistory-order-detail/', views.WaiterHistoryOrderDetail.as_view(), name='waiter-order-detail'),
-    path('food-rating-filter/', views.FoodRatingApiView.as_view(), name='food-rating')
 ]

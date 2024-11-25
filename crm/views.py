@@ -37,7 +37,7 @@ class StatisticsApiView(generics.GenericAPIView):
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = serializers.StartandEndDateSerializer
     
-    def post(self, request,*args,**kwargs):
+    def get(self, request,*args,**kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -283,7 +283,7 @@ class ProductApiView(generics.GenericAPIView):
     serializer_class = serializers.StartandEndDateSerializer
     permission_classes = (permissions.IsAdminUser,)
 
-    def post(self, request):
+    def get(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -360,6 +360,7 @@ class WaiterHistoryOrderDetail(generics.GenericAPIView):
         employee_id = self.request.query_params.get('employeeId', None)
         start_date = self.request.query_params.get('startDate', None)
         end_date = self.request.query_params.get('endDate', None)
+        food_id = self.request.query_params.get('foodId', None)
 
 
         filters = {}
@@ -369,7 +370,10 @@ class WaiterHistoryOrderDetail(generics.GenericAPIView):
             filters["created_at__date"] = date.today()
         
         if employee_id:
-            filters = {"cart__user_id": employee_id}
+            filters["cart__user_id"]= employee_id
+        if food_id:
+            filters["cart__items__food__id"]= food_id
+
 
         return Order.objects.filter(**filters)
 
@@ -401,45 +405,3 @@ class WaiterHistoryOrderDetail(generics.GenericAPIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
         
-
-class FoodRatingApiView(generics.GenericAPIView):
-    serializer_class = serializers.StartandEndDateSerializer
-    permission_classes = (permissions.IsAdminUser, )
-
-    def get_queryset(self):
-        food_id = self.request.query_params.get('foodId', None)
-        start_date = self.request.query_params.get('startDate', None)
-        end_date = self.request.query_params.get('endDate', None)
-
-        filters = {"cart__items__food__id": food_id}
-
-        if start_date and end_date:
-            filters["created_at__date__range"] = (start_date, end_date)
-        elif start_date==0 and end_date==0:
-            filters["created_at__date__lte"] = date.today()
-
-        return Order.objects.filter(**filters)
-
-    def get(self, request):
-
-        serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        try:
-            orders_food = self.get_queryset()
-
-            if not orders_food.exists():
-                return Response(
-                    {"detail": "No dishes found for the given date."},
-                    status=status.HTTP_404_NOT_FOUND
-                )
-
-            serializer = serializers.WaiterHistoryDetailSerializer(orders_food, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        except Exception as e:
-            # Handle unexpected errors
-            return Response(
-                {"detail": "An error occurred while fetching orders.", "error": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
