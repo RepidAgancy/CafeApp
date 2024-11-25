@@ -37,7 +37,7 @@ class StatisticsApiView(generics.GenericAPIView):
     permission_classes = (permissions.IsAdminUser,)
     serializer_class = serializers.StartandEndDateSerializer
     
-    def get(self, request,*args,**kwargs):
+    def post(self, request,*args,**kwargs):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -283,31 +283,42 @@ class ProductApiView(generics.GenericAPIView):
     serializer_class = serializers.StartandEndDateSerializer
     permission_classes = (permissions.IsAdminUser,)
 
+    def get_queryset(self):
+        start_date = self.request.query_params.get('startDate', None)
+        end_date = self.request.query_params.get('endDate', None)
+
+        filters = {}
+        if start_date and end_date:
+            filters["created_at__date__range"] = (start_date, end_date)
+        else:
+            filters['created_at__date__lte'] = date.today()  
+
+        return CartItemProduct.objects.filter(**filters)
+
     def get(self, request):
         serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
+        try:
+            # Use the queryset retrieved from `get_queryset`
+            products = self.get_queryset()
 
-        start_date = serializer.validated_data.get('start_date',0)
-        end_date = serializer.validated_data.get('end_date', 0)
-
-        if start_date == 0 and end_date == 0:
-            products = CartItemProduct.objects.all()
-        else:
-            
-            products = CartItemProduct.objects.filter( 
-                created_at__date__range=(start_date, end_date)
+            if not products.exists():
+                return Response(
+                    {"detail": "No products found for the given filters."},
+                    status=status.HTTP_404_NOT_FOUND
                 )
 
-        if not products.exists():
+            # Serialize and return orders
+            serializer = serializers.ProductListSerializers(products, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        except Exception as e:
             return Response(
-                {"detail": "No products found for the given date."},
-                status=status.HTTP_404_NOT_FOUND
+                {"detail": "An error occurred while fetching orders.", "error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-        serializer = serializers.ProductListSerializers(products, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
+    
 class PaymentEmployeeSalaryCreateApiView(generics.GenericAPIView):
     serializer_class = serializers.PaymentEmployeeSalaryCreateSerializer
     permission_classes = (permissions.IsAdminUser,)

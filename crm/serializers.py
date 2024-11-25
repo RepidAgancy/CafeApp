@@ -260,16 +260,19 @@ class CartsItemSerializer(serializers.ModelSerializer):
 class CartsSerializer(serializers.ModelSerializer):
     items = CartsItemSerializer(many=True, read_only=True)
     user = serializers.SerializerMethodField(method_name='get_user')
+    table_number = serializers.SerializerMethodField(method_name='get_table_number')
 
     class Meta:
         model = common_models.Cart
         fields = [
-            'id', 'table', 'total_price', 'is_confirm', 'items', 'user'
+            'id', 'table_number', 'total_price', 'is_confirm', 'items', 'user'
             ]
     def get_user(self, obj):
         if obj.user.type==WAITER:
             return obj.user.username
-
+        
+    def get_table_number(self, obj):
+        return obj.table.number
 
 class WaiterHistoryDetailSerializer(serializers.ModelSerializer):
     cart = CartsSerializer(read_only=True)
