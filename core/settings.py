@@ -290,3 +290,5 @@ ROSETTA_AUTO_COMPILE = True
 LOCALE_PATHS = [
     BASE_DIR / 'locale'
 ]
+
+BASE_URL = 'http:api.repid.uz'

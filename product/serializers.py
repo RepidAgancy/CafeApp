@@ -1,19 +1,30 @@
 from django.utils import timezone
 from rest_framework import serializers
 
+from core.settings import BASE_URL
 from product import models
 
 
 class ProductCategoryListSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField(method_name='get_image')
+
     class Meta:
         model = models.CategoryProduct
         fields = ['id', 'name_uz', 'name_ru', 'name_en', 'image',]
 
+    def get_image(self, obj):
+        return f'{BASE_URL}{obj.image.url}'
+
 
 class ProductListSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField(method_name='get_image')
+
     class Meta:
         model = models.Product
         fields = ['id', 'name_uz', 'name_ru', 'name_en', 'image', 'price']
+
+    def get_image(self, obj):
+        return f'{BASE_URL}{obj.image.url}'
 
 
 class ProductCartItemCreateSerializer(serializers.ModelSerializer):
@@ -208,9 +219,15 @@ class ProductCreateSerializer(serializers.Serializer):
             'message': 'Product is successfully created',
         }
 
+
 class ProductListByCategorySerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField(method_name='get_image')
+
     class Meta:
         model = models.Product
         fields = [
             'id', 'name_uz', 'name_ru', 'name_en', 'image', 'price',
         ]
+
+        def get_image(self, obj):
+            return f'{BASE_URL}{obj.image.url}'
