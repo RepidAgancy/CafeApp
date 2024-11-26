@@ -112,6 +112,7 @@ class FoodSerializer(serializers.ModelSerializer):
     
 
 class FoodCreateUpdateSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(required=False)
     class Meta:
         model = common_models.Food
         fields = [
@@ -121,7 +122,7 @@ class FoodCreateUpdateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         food = common_models.Food.objects.create(
             name=validated_data['name'],
-            image=validated_data['image'],
+            image=validated_data.get('image', None),
             price=validated_data['price'],
             category=validated_data['category'],
             food_info_uz=validated_data.get('food_info_uz', None),
