@@ -22,7 +22,7 @@ urlpatterns = [
     path('food/<int:pk>/update/', views.FoodUpdateApiView.as_view(), name='food-update'),
     path('food/category-list/', views.FoodCategoryListView.as_view(), name='food-category-list'),
     # product
-    path('product/list/', views.ProductListApiView.as_view(), name='product-list'),
+    path('product/list/', views.ProductApiView.as_view(), name='product-list'),
     # payment
     path('payment/employee-salary/add/', views.PaymentEmployeeSalaryCreateApiView.as_view(), name='payment-employee-salary-add'),
     path('payment/add/', views.PaymentCreateApiView.as_view(), name='payment-add'),
@@ -31,5 +31,8 @@ urlpatterns = [
     # payment-type list
     path('paymeny/type/list/', views.PaymentCategoryApiView.as_view(), name='payment-category-list'),
     #validation for access token
-    path('validate-accesstoken', views.ValidateAccessTokenView.as_view(), name='access-token-validate'),
+    path('validate-accesstoken/', views.ValidateAccessTokenView.as_view(), name='access-token-validate'),
+    #waiter list for statistics
+    path('waiter-list/', views.WaiterListView.as_view(), name='waiter-list'),
+    path('waiterhistory-order-detail/', views.WaiterHistoryOrderDetail.as_view(), name='waiter-order-detail'),
 ]
