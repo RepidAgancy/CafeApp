@@ -111,7 +111,7 @@ class ProductCartItemSerializer(serializers.ModelSerializer):
         return obj.product.price
 
     def get_image(self, obj):
-        return f'{BASE_URL}{obj.image.url}'
+        return f'{BASE_URL}{obj.product.image.url}'
 
 
 class ProductCartSerializer(serializers.ModelSerializer):
