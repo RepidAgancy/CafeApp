@@ -90,7 +90,6 @@ WSGI_APPLICATION = 'core.wsgi.application'
 CSRF_TRUSTED_ORIGINS = ['http://crm.repid.uz/','http://127.0.0.1']
 CORS_ORIGIN_WHITELIST = [
     'http://127.0.0.1:5173',  # Your frontend address
-
 ]
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",  # For local development
@@ -291,4 +290,4 @@ LOCALE_PATHS = [
     BASE_DIR / 'locale'
 ]
 
-BASE_URL = 'http:api.repid.uz'
+BASE_URL = 'http://api.repid.uz'
