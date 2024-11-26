@@ -79,25 +79,35 @@ class MonthlyStatisticsAPIView(views.APIView):
     permission_classes = (permissions.IsAdminUser,)
 
     def get(self, request):
-        monthly_income = (
+        product_expense = (
             OrderProduct.objects
-            .filter(type=PROFIT, is_confirm=True, status=APPROVED)
-            .annotate(month=ExtractMonth('created_at'))
-            .values('month')
-            .annotate(total_income=Sum('cart__total_price'))
-            .order_by('month')
-        )
-
-        monthly_expense = (
-            Order.objects
-            .filter(type=EXPENSE, is_confirm=True, status=DONE)
+            .filter(type=EXPENSE, is_confirm=True, status=APPROVED)
             .annotate(month=ExtractMonth('created_at'))
             .values('month')
             .annotate(total_expense=Sum('cart__total_price'))
             .order_by('month')
         )
 
-        income_data = {item['month']: item['total_income'] for item in monthly_income}
+        order_income = (
+            Order.objects
+            .filter(type=PROFIT, is_confirm=True, status=DONE)
+            .annotate(month=ExtractMonth('created_at'))
+            .values('month')
+            .annotate(total_income=Sum('cart__total_price'))
+            .order_by('month')
+        )
+        payment_expense = (
+            Payment.objects
+            .filter(type=EXPENSE)
+            .annotate(month=ExtractMonth('created_at'))
+            .values('month')
+            .annotate(total_expense=Sum('price'))
+            .order_by('month')
+        )
+
+        monthly_expense = product_expense.union(payment_expense).order_by('month')
+
+        income_data = {item['month']: item['total_income'] for item in order_income}
         expense_data = {item['month']: item['total_expense'] for item in monthly_expense}
 
         data = {
