@@ -101,7 +101,7 @@ class ProductItemEditSerializer(serializers.ModelSerializer):
 class ProductCartItemSerializer(serializers.ModelSerializer):
     price = serializers.SerializerMethodField(method_name='get_price')
     product_name = serializers.CharField(source='product.name')
-    product_image = serializers.CharField(source='product.image.url')
+    product_image = serializers.SerializerMethodField(method_name='get_image')
 
     class Meta:
         model = models.CartItemProduct
@@ -109,6 +109,9 @@ class ProductCartItemSerializer(serializers.ModelSerializer):
 
     def get_price(self, obj):
         return obj.product.price
+
+    def get_image(self, obj):
+        return f'{BASE_URL}{obj.image.url}'
 
 
 class ProductCartSerializer(serializers.ModelSerializer):
