@@ -9,6 +9,7 @@ from django.core.files.base import ContentFile
 IN_PROCESS, DONE = (_('jarayonda'), _('bajarildi'))
 PROFIT, EXPENSE = (_('kirim'), _('chiqim'))
 
+
 class BaseModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -76,6 +77,7 @@ class Food(BaseModel):
 
         # Super metodni chaqirish
         super().save(*args, **kwargs)
+
     class Meta:
         verbose_name = _('toam')
         verbose_name_plural = _('toamlar')
