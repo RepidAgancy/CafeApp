@@ -52,6 +52,8 @@ class StartandEndDateSerializer(serializers.Serializer):
 
 
 class EmployeeCreateSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(required=False)
+    password = serializers.CharField(required=False)
     class Meta:
         model = User
         fields = [
@@ -67,8 +69,8 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
             profile_image = validated_data.get('profile_image',None),
             salary=validated_data['salary'],
             work_experience=validated_data['work_experience'],
-            username=validated_data['username'],
-            password=make_password(validated_data['password']),
+            username=validated_data.get('username',None),
+            password=make_password(validated_data.get('password', None)),
         )
         return {
             'message': 'Employee successfully added',
