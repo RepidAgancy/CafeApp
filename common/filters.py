@@ -25,5 +25,5 @@ class OrderListInProcessFilter(django_filters.FilterSet):
 
     def filter_table(self, queryset, name, value):
         return queryset.filter(
-            cart__table__number=value
+            cart__table__number__icontains=value
         )
