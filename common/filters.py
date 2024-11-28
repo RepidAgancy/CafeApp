@@ -14,3 +14,16 @@ class FoodFilter(django_filters.FilterSet):
         return queryset.filter(
             Q(name__icontains=value)
         )
+
+
+class OrderListInProcessFilter(django_filters.FilterSet):
+    table_number = django_filters.NumberFilter(method='filter_table')
+
+    class Meta:
+        model = models.Order
+        fields = ['table_number']
+
+    def filter_table(self, queryset, name, value):
+        return queryset.filter(
+            cart__table__number=value
+        )

@@ -150,15 +150,18 @@ class OrderConfirmedApiView(generics.GenericAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class OrderListInProcessApiView(generics.GenericAPIView):
+class OrderListInProcessApiView(generics.ListAPIView):
     serializer_class = serializers.OrderListSerializer
     permission_classes = [permissions.IsCashierOrWaiter]
     pagination_class = None
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = filters.OrderListInProcessFilter
 
-    def get(self, request):
-        order = models.Order.objects.filter(status=models.IN_PROCESS, cart__user=request.user)
-        serializer = self.get_serializer(order, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        return models.Order.objects.filter(
+            status=models.IN_PROCESS,
+            cart__user=self.request.user
+        )
 
 
 class OrderListIsDoneApiView(generics.GenericAPIView):
