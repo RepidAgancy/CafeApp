@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'common',
     'product',
     'crm',
-    'chat',
 ]
 
 MIDDLEWARE = [
@@ -83,7 +82,6 @@ TEMPLATES = [
     },
 ]
 
-ASGI_APPLICATION = 'core.asgi.application'
 WSGI_APPLICATION = 'core.wsgi.application'
 
 
