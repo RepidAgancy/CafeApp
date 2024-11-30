@@ -6,25 +6,18 @@ from product import models
 
 
 class ProductCategoryListSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField(method_name='get_image')
 
     class Meta:
         model = models.CategoryProduct
         fields = ['id', 'name_uz', 'name_ru', 'name_en', 'image',]
 
-    def get_image(self, obj):
-        return f'{BASE_URL}{obj.image.url}'
-
 
 class ProductListSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField(method_name='get_image')
 
     class Meta:
         model = models.Product
         fields = ['id', 'name_uz', 'name_ru', 'name_en', 'image', 'price']
 
-    def get_image(self, obj):
-        return f'{BASE_URL}{obj.image.url}'
 
 
 class ProductCartItemCreateSerializer(serializers.ModelSerializer):
@@ -101,7 +94,6 @@ class ProductItemEditSerializer(serializers.ModelSerializer):
 class ProductCartItemSerializer(serializers.ModelSerializer):
     price = serializers.SerializerMethodField(method_name='get_price')
     product_name = serializers.CharField(source='product.name')
-    product_image = serializers.SerializerMethodField(method_name='get_image')
 
     class Meta:
         model = models.CartItemProduct
@@ -109,9 +101,6 @@ class ProductCartItemSerializer(serializers.ModelSerializer):
 
     def get_price(self, obj):
         return obj.product.price
-
-    def get_image(self, obj):
-        return f'{BASE_URL}{obj.product.image.url}'
 
 
 class ProductCartSerializer(serializers.ModelSerializer):
@@ -224,13 +213,9 @@ class ProductCreateSerializer(serializers.Serializer):
 
 
 class ProductListByCategorySerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField(method_name='get_image')
 
     class Meta:
         model = models.Product
         fields = [
             'id', 'name_uz', 'name_ru', 'name_en', 'image', 'price',
         ]
-
-        def get_image(self, obj):
-            return f'{BASE_URL}{obj.image.url}'
