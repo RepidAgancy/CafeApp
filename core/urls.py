@@ -19,6 +19,7 @@ schema_view = get_schema_view(
       contact=openapi.Contact(email="contact@snippets.local"),
       license=openapi.License(name="BSD License"),
    ),
+   url='https://api.repid.uz',
    public=True,
    permission_classes=(permissions.AllowAny,),
 )
