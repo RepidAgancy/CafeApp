@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from common import models
+from core.settings import BASE_URL
 
 
 class TableListSerializer(serializers.ModelSerializer):
@@ -53,6 +54,11 @@ class FoodListSerializer(serializers.ModelSerializer):
             'id', 'name_uz', 'name_ru', 'name_en', 'image', 'price',
         ]
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['image'] = f"{BASE_URL}{representation['image']}"
+        return representation
+
 
 class FoodDetailSerializer(serializers.ModelSerializer):
     class Meta:
@@ -62,6 +68,11 @@ class FoodDetailSerializer(serializers.ModelSerializer):
             'food_info_uz','food_info_ru', 'food_info_en',
         ]
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['image'] = f"{BASE_URL}{representation['image']}"
+        return representation
+
 
 class FoodCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -70,6 +81,11 @@ class FoodCategorySerializer(serializers.ModelSerializer):
             'id', 'name_uz', 'name_ru', 'name_en', 'image'
         ]
 
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['image'] = f"{BASE_URL}{representation['image']}"
+        return representation
+
 
 class FoodListByCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -77,6 +93,11 @@ class FoodListByCategorySerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name_uz', 'name_ru', 'name_en', 'image', 'price',
         ]
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['image'] = f"{BASE_URL}{representation['image']}"
+        return representation
 
 
 class CartItemCreateSerializer(serializers.Serializer):

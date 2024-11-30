@@ -35,6 +35,7 @@ class LoginSerializer(serializers.Serializer):
 class LogoutSerializer(serializers.Serializer):
     refresh_token = serializers.CharField()
 
+
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
