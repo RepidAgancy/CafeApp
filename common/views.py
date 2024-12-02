@@ -191,7 +191,7 @@ class FinishDayApiView(views.APIView):
             ofitsant_kpi = (total_price / 100) * 10
             data = {
                 'sana': today,
-                "orders": orders.count(),
+                "orders": last_day_orders.count(),
                 'percentage_for': 10,
                 'total_price': total_price,
                 'ofitsant_kpi': ofitsant_kpi,
