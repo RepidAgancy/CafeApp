@@ -63,10 +63,10 @@ class FoodDetailSerializer(serializers.ModelSerializer):
             'food_info_uz','food_info_ru', 'food_info_en',
         ]
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['image'] = f"{BASE_URL}{representation['image']}"
-        return representation
+    # def to_representation(self, instance):
+    #     representation = super().to_representation(instance)
+    #     representation['image'] = f"{BASE_URL}{representation['image']}"
+    #     return representation
 
 
 class FoodCategorySerializer(serializers.ModelSerializer):

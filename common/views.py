@@ -190,10 +190,11 @@ class FinishDayApiView(views.APIView):
                 total_price += float(order['cart']['total_price'])
             ofitsant_kpi = (total_price / 100) * 10
             data = {
-                "user": user.id,
-                "orders": orders,
-                'total_price': f'{total_price:.3f} UZS',
-                'ofitsant_kpi': f'{ofitsant_kpi:.3f} UZS',
+                'sana': today,
+                "orders": orders.count(),
+                'percentage_for': 10,
+                'total_price': total_price,
+                'ofitsant_kpi': ofitsant_kpi,
             }
             return Response(data)
         else:
