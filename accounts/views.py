@@ -1,6 +1,7 @@
 from rest_framework.response import Response
 from rest_framework import response, generics, status, permissions, views
 from rest_framework_simplejwt.tokens import RefreshToken
+from crm import permissions as permission
 
 from accounts import serializers
 from accounts.models import User
@@ -54,7 +55,7 @@ class UserProfileView(generics.GenericAPIView):
 
 
 class UserProfileChangeView(generics.UpdateAPIView):
-    permission_classes = (permissions.IsAdminUser,)  
+    permission_classes = (permission.IsAdminUser,)  
     serializer_class = UserProfileSerializer
 
     def get_object(self):
