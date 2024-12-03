@@ -131,7 +131,7 @@ class OrderCreateApiView(generics.GenericAPIView):
     permission_classes = [permissions.IsCashierOrWaiter]
 
     def post(self, request):
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data, context={'user': request.user})
         if serializer.is_valid():
             result = serializer.save()
             return Response(result, status=status.HTTP_200_OK)
@@ -222,10 +222,11 @@ class OrderIsConfirmListApiView(generics.ListAPIView):
         return models.Order.objects.filter(cart__user=self.request.user, is_confirm=True)
 
 
-class OrderIsNotConfirmListApiView(generics.ListAPIView):
+class OrderIsNotConfirmListApiView(views.APIView):
     permission_classes = [permissions.IsCashier]
-    serializer_class = serializers.OrderListSerializer
-    pagination_class = None
 
-    def get_queryset(self):
-        return models.Order.objects.filter(cart__user=self.request.user, is_confirmed=False)
+    def get(self, request):
+        orders = models.Order.objects.filter(cart__user=request.user, is_confim=False, status=models.DONE)
+        print(request.user)
+        serializer = serializers.OrderListSerializer(orders, many=True)
+        return Response(serializer.data)

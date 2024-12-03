@@ -1,7 +1,9 @@
 from rest_framework import serializers
 
+import accounts.models
 from common import models
 from core.settings import BASE_URL
+from accounts.models import WAITER, CASHIER
 
 
 class TableListSerializer(serializers.ModelSerializer):
@@ -63,11 +65,6 @@ class FoodDetailSerializer(serializers.ModelSerializer):
             'food_info_uz','food_info_ru', 'food_info_en',
         ]
 
-    # def to_representation(self, instance):
-    #     representation = super().to_representation(instance)
-    #     representation['image'] = f"{BASE_URL}{representation['image']}"
-    #     return representation
-
 
 class FoodCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -75,8 +72,6 @@ class FoodCategorySerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name_uz', 'name_ru', 'name_en', 'image'
         ]
-
-
 
 
 class FoodListByCategorySerializer(serializers.ModelSerializer):
@@ -205,15 +200,22 @@ class OrderCreateSerializer(serializers.ModelSerializer):
         extra_kwargs = {'id': {'read_only': True}}
 
     def create(self, validated_data):
+        user = self.context['user']
         try:
             order = models.Order.objects.get(
-                cart=validated_data['cart'], status=models.IN_PROCESS
+                cart=validated_data['cart']
             )
         except models.Order.DoesNotExist:
-            order = models.Order.objects.create(
-                cart=validated_data['cart'],
-                status=models.IN_PROCESS,
-            )
+            if user.type == WAITER:
+                order = models.Order.objects.create(
+                    cart=validated_data['cart'],
+                    status=models.IN_PROCESS,
+                )
+            elif user.type == CASHIER:
+                order = models.Order.objects.create(
+                    cart=validated_data['cart'],
+                    status=models.DONE,
+                )
         cart = order.cart
         if not models.CartItem.objects.filter(cart=cart).exists():
             return {

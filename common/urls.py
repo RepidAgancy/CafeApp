@@ -26,7 +26,7 @@ urlpatterns = [
     path('order/list/is-done/', views.OrderListIsDoneApiView.as_view(), name='order-list-is-done'),
     path('order/confirm/', views.OrderConfirmApiView.as_view(), name='order-confirm'),
     path('order/list/is-confirm/', views.OrderIsConfirmListApiView.as_view(), name='order-list-is-confirm'),
-    path('order/list/is-not-confirm/', views.OrderIsConfirmListApiView.as_view(), name='order-list-is-not-confirm'),
+    path('order/list/is-not-confirm/', views.OrderIsNotConfirmListApiView.as_view(), name='order-list-is-not-confirm'),
     # finish day
     path('finish-day/', views.FinishDayApiView.as_view(), name='finish-day'),
 ]
