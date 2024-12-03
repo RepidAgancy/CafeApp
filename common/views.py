@@ -226,7 +226,7 @@ class OrderIsNotConfirmListApiView(views.APIView):
     permission_classes = [permissions.IsCashier]
 
     def get(self, request):
-        orders = models.Order.objects.filter(cart__user=request.user, is_confim=False, status=models.DONE)
+        orders = models.Order.objects.filter(cart__user=request.user, is_confirm=False, status=models.DONE)
         print(request.user)
         serializer = serializers.OrderListSerializer(orders, many=True)
         return Response(serializer.data)
