@@ -162,7 +162,7 @@ class OrderConfirmedApiView(generics.GenericAPIView):
 
 
 class OrderListInProcessApiView(generics.ListAPIView):
-    serializer_class = serializers.OrderListSerializer
+    serializer_class = serializers.OrderSerializer
     permission_classes = [permissions.IsCashierOrWaiter]
     pagination_class = None
     filter_backends = [DjangoFilterBackend]
@@ -176,7 +176,7 @@ class OrderListInProcessApiView(generics.ListAPIView):
 
 
 class OrderListIsDoneApiView(generics.GenericAPIView):
-    serializer_class = serializers.OrderListSerializer
+    serializer_class = serializers.OrderSerializer
     permission_classes = [permissions.IsCashierOrWaiter]
     pagination_class = None
 

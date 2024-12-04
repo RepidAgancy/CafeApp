@@ -319,6 +319,22 @@ class OrderListSerializer(serializers.ModelSerializer):
         return obj.created_at.time()
 
 
+class OrderSerializer(serializers.ModelSerializer):
+    cart = serializers.SerializerMethodField(method_name='get_cart')
+    total_price = serializers.IntegerField(source='cart.total_price')
+    # user = OrderUserSerializer(source='cart.user')
+
+    class Meta:
+        model = models.Order
+        fields = [
+            'id', 'cart', 'created_at', 'total_price',
+        ]
+
+    def get_cart(self, obj):
+        cart = obj.cart
+        return CartSerializer(cart).data
+
+
 class OrderFoodConfirmSerializer(serializers.Serializer):
     order_id = serializers.IntegerField()
 
