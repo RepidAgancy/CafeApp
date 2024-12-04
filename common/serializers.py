@@ -321,18 +321,21 @@ class OrderListSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     cart = serializers.SerializerMethodField(method_name='get_cart')
-    total_price = serializers.IntegerField(source='cart.total_price')
-    # user = OrderUserSerializer(source='cart.user')
+    total_price = serializers.SerializerMethodField(method_name='get_total_price')
 
     class Meta:
         model = models.Order
         fields = [
-            'id', 'cart', 'status', 'created_at', 'total_price',
+            'id', 'cart', 'status', 'created_at', 'total_price'
         ]
 
     def get_cart(self, obj):
         cart = obj.cart
         return CartSerializer(cart).data
+
+    def get_total_price(self, obj):
+        total_price = obj.cart.total_price
+        return total_price
 
 
 class OrderFoodConfirmSerializer(serializers.Serializer):
