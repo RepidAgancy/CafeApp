@@ -29,4 +29,5 @@ urlpatterns = [
     path('order/list/is-not-confirm/', views.OrderIsNotConfirmListApiView.as_view(), name='order-list-is-not-confirm'),
     # finish day
     path('finish-day/', views.FinishDayApiView.as_view(), name='finish-day'),
+    path('cashier-finish-day/', views.CashierFinishDayApiView.as_view(), name='cashier-finish-dat'),
 ]

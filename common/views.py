@@ -241,3 +241,26 @@ class OrderIsNotConfirmListApiView(views.APIView):
         print(request.user)
         serializer = serializers.OrderListSerializer(orders, many=True)
         return Response(serializer.data)
+
+
+class CashierFinishDayApiView(views.APIView):
+    permission_classes = [permissions.IsCashier]
+
+    def post(self, request):
+        today = timezone.now().date()
+        if models.Order.objects.filter(is_confirm=False):
+            return Response({'message': 'Siz kunni yakunlay olmaysiz qachonki buyurtmalar toliq tugatilmaguncha'})
+        orders = models.Order.objects.filter(created_at__date=today)
+        delivery_orders = models.Order.objects.filter(cart__user=request.user, created_at__date=today).count()
+        total_price = 0
+        for order in orders:
+            total_price += order.cart.total_price
+
+        data = {
+            'sana': today,
+            'orders_count': orders.count(),
+            'delivery': delivery_orders,
+            'total_price': total_price,
+            'cashier': f'{request.user.first_name} {request.user.last_name}',
+        }
+        return Response(data, status=status.HTTP_200_OK)

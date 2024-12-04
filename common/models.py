@@ -124,7 +124,6 @@ class Order(BaseModel):
     is_confirm = models.BooleanField(default=False)
     type = models.CharField(max_length=20, choices=TYPE, default=PROFIT)
 
-
     def __str__(self):
         return f'{self.cart} - {self.status}'
 
