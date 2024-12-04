@@ -1,9 +1,7 @@
 from rest_framework import serializers
 
-import accounts.models
 from common import models
-from core.settings import BASE_URL
-from accounts.models import WAITER, CASHIER
+from accounts.models import WAITER, CASHIER, User
 
 
 class TableListSerializer(serializers.ModelSerializer):
@@ -16,11 +14,16 @@ class TableListSerializer(serializers.ModelSerializer):
         ]
 
     def get_cart_id(self, obj):
+        user = self.context['request'].user
         if obj.is_busy:
             cart = models.Cart.objects.filter(table_id=obj.id).last()
             return cart.id
         else:
-            return None
+            if user.type == CASHIER:
+                cart = models.Cart.objects.filter(user=user).last()
+                return cart.id
+            else:
+                return None
 
 
 class TableGetSerializer(serializers.Serializer):
@@ -36,9 +39,11 @@ class TableGetSerializer(serializers.Serializer):
         return data
 
     def save(self):
+        user = self.context['request'].user
         table = models.Table.objects.get(id=self.validated_data['table_id'])
-        table.is_busy = True
-        table.save()
+        if user.type == WAITER:
+            table.is_busy = True
+            table.save()
         cart = models.Cart.objects.create(
             table=table,
             user=self.context['request'].user,
@@ -256,23 +261,53 @@ class OrderChangeStatusSerializer(serializers.Serializer):
         }
 
 
+class OrderUserSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField(method_name='get_full_name')
+
+    class Meta:
+        model = User
+        fields = ['full_name', 'type']
+
+    def get_full_name(self, obj):
+        return f'{obj.first_name} {obj.last_name}'
+
+
+class OrderCartItemListSerializer(serializers.ModelSerializer):
+    food = serializers.CharField(source='food.name')
+
+    class Meta:
+        model = models.CartItem
+        fields = ['id', 'food', 'quantity']
+
+
+class OrderCartListSerializer(serializers.ModelSerializer):
+    cart_items = serializers.SerializerMethodField(method_name='get_cart_items')
+    table_number = serializers.IntegerField(source='table.number')
+
+    class Meta:
+        model = models.Cart
+        fields = [
+            'id', 'table_number', 'cart_items'
+        ]
+
+    def get_cart_items(self, obj):
+        cart_items = models.CartItem.objects.filter(cart=obj)
+        return OrderCartItemListSerializer(cart_items, many=True).data
+
+
 class OrderListSerializer(serializers.ModelSerializer):
     cart = serializers.SerializerMethodField(method_name='get_cart')
-    total_price = serializers.SerializerMethodField(method_name='get_total_price')
-
+    total_price = serializers.IntegerField(source='cart.total_price')
+    user = OrderUserSerializer(source='cart.user')
     class Meta:
         model = models.Order
         fields = [
-            'id', 'cart', 'status', 'created_at', 'total_price'
+            'id', 'cart', 'created_at', 'total_price', 'user'
         ]
 
     def get_cart(self, obj):
         cart = obj.cart
-        return CartSerializer(cart).data
-
-    def get_total_price(self, obj):
-        total_price = obj.cart.total_price
-        return f"{total_price} UZS"
+        return OrderCartListSerializer(cart).data
 
 
 class OrderFoodConfirmSerializer(serializers.Serializer):

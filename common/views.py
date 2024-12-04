@@ -18,6 +18,11 @@ class TableListApiView(generics.ListAPIView):
         else:
             return models.Table.objects.filter(number=0)
 
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
+
 
 class TableGetApiView(generics.GenericAPIView):
     serializer_class = serializers.TableGetSerializer
