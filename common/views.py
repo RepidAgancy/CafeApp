@@ -4,13 +4,19 @@ from rest_framework import generics, status, views
 from rest_framework.response import Response
 
 from common import models, serializers, permissions, filters
+from accounts.models import CASHIER, WAITER
 
 
 class TableListApiView(generics.ListAPIView):
     serializer_class = serializers.TableListSerializer
-    queryset = models.Table.objects.order_by('number')
     permission_classes = [permissions.IsCashierOrWaiter]
     pagination_class = None
+
+    def get_queryset(self):
+        if self.request.user.type == WAITER:
+            return models.Table.objects.exclude(number=0).order_by('number')
+        else:
+            return models.Table.objects.filter(number=0)
 
 
 class TableGetApiView(generics.GenericAPIView):
