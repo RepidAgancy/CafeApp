@@ -335,7 +335,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     def get_total_price(self, obj):
         total_price = obj.cart.total_price
-        return total_price
+        return f'{total_price}'
 
 
 class OrderFoodConfirmSerializer(serializers.Serializer):
