@@ -327,7 +327,7 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Order
         fields = [
-            'id', 'cart', 'created_at', 'total_price',
+            'id', 'cart', 'status', 'created_at', 'total_price',
         ]
 
     def get_cart(self, obj):
