@@ -21,6 +21,12 @@ class TableListSerializer(serializers.ModelSerializer):
         else:
             if user.type == CASHIER:
                 cart = models.Cart.objects.filter(user=user).last()
+                try:
+                    order = models.Order.objects.get(cart=cart)
+                except:
+                    return cart.id
+                if order.is_confirm == True:
+                    return None
                 return cart.id
             else:
                 return None
