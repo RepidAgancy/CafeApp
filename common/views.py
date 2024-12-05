@@ -198,7 +198,7 @@ class FinishDayApiView(views.APIView):
             orders = serializers.OrderListSerializer(last_day_orders, many=True).data
             total_price = 0
             for order in orders:
-                total_price += float(order['cart']['total_price'])
+                total_price += float(order['total_price'])
             ofitsant_kpi = (total_price / 100) * 10
             data = {
                 'sana': today,
