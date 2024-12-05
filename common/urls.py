@@ -10,6 +10,7 @@ urlpatterns = [
     # table
     path('table/list/', views.TableListApiView.as_view(), name='tables'),
     path('table/choose/', views.TableGetApiView.as_view(), name='table-get'),
+    path('create/cart/', views.CartCreateApiView.as_view(), name='cart_create'),
     # food
     path('food/list/', views.FoodListApiView.as_view(), name='foods'),
     path('food/<int:id>/', views.FoodDetailApiView.as_view(), name='food-detail'),
@@ -30,4 +31,5 @@ urlpatterns = [
     # finish day
     path('finish-day/', views.FinishDayApiView.as_view(), name='finish-day'),
     path('cashier-finish-day/', views.CashierFinishDayApiView.as_view(), name='cashier-finish-dat'),
+
 ]

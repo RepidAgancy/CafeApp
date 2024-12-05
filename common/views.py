@@ -264,3 +264,16 @@ class CashierFinishDayApiView(views.APIView):
             'cashier': f'{request.user.first_name} {request.user.last_name}',
         }
         return Response(data, status=status.HTTP_200_OK)
+
+
+class CartCreateApiView(views.APIView):
+    permission_classes = [permissions.IsCashier, ]
+
+    def post(self, request):
+        cart = models.Cart.objects.create(
+            user=request.user
+        )
+        data = {
+            'cart_id': cart.id
+        }
+        return Response(data)

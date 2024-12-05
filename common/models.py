@@ -84,7 +84,7 @@ class Food(BaseModel):
 
 
 class Cart(BaseModel):
-    table = models.ForeignKey(Table, on_delete=models.CASCADE)
+    table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, blank=True)
     total_price = models.PositiveIntegerField(default=0.000)
     user = models.ForeignKey('accounts.User', on_delete=models.CASCADE, related_name='orders')
     is_confirm = models.BooleanField(default=False)
