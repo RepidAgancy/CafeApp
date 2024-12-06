@@ -217,6 +217,7 @@ class FinishDayApiView(views.APIView):
 class OrderConfirmApiView(generics.GenericAPIView):
     serializer_class = serializers.OrderFoodConfirmSerializer
     permission_classes = [permissions.IsCashier]
+    pagination_class = None
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
