@@ -304,14 +304,15 @@ class OrderCartListSerializer(serializers.ModelSerializer):
 class OrderListSerializer(serializers.ModelSerializer):
     cart = serializers.SerializerMethodField(method_name='get_cart')
     total_price = serializers.IntegerField(source='cart.total_price')
-    user = OrderUserSerializer(source='cart.user')
     date = serializers.SerializerMethodField(method_name='get_date')
     time = serializers.SerializerMethodField(method_name='get_time')
+    user_full_name = serializers.SerializerMethodField(method_name='get_full_name')
+    user_type = serializers.CharField(source='cart.user.type')
 
     class Meta:
         model = models.Order
         fields = [
-            'id', 'cart', 'date', 'time', 'total_price', 'user'
+            'id', 'cart', 'date', 'time', 'total_price', 'user_type', 'user_full_name'
         ]
 
     def get_cart(self, obj):
@@ -324,6 +325,8 @@ class OrderListSerializer(serializers.ModelSerializer):
     def get_time(self, obj):
         return obj.created_at.time()
 
+    def get_full_name(self, obj):
+        return f'{obj.cart.user.first_name} {obj.cart.user.last_name}'
 
 class OrderSerializer(serializers.ModelSerializer):
     cart = serializers.SerializerMethodField(method_name='get_cart')
