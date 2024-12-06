@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status, views
@@ -230,15 +232,18 @@ class OrderIsConfirmListApiView(generics.ListAPIView):
     pagination_class = None
 
     def get_queryset(self):
-        return models.Order.objects.filter(is_confirm=True, created_at=timezone.now().date())
+        start_of_day = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_day = start_of_day + timedelta(days=1)
+        return models.Order.objects.filter(is_confirm=True, created_at__gte=start_of_day, created_at__lt=end_of_day)
 
 
 class OrderIsNotConfirmListApiView(views.APIView):
     permission_classes = [permissions.IsCashier]
 
     def get(self, request):
-        orders = models.Order.objects.filter(is_confirm=False, status=models.DONE, created_at=timezone.now().date())
-        print(request.user)
+        start_of_day = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_day = start_of_day + timedelta(days=1)
+        orders = models.Order.objects.filter(is_confirm=False, status=models.DONE, created_at__gte=start_of_day, created_at__lt=end_of_day)
         serializer = serializers.OrderListSerializer(orders, many=True)
         return Response(serializer.data)
 
