@@ -230,14 +230,14 @@ class OrderIsConfirmListApiView(generics.ListAPIView):
     pagination_class = None
 
     def get_queryset(self):
-        return models.Order.objects.filter(cart__user=self.request.user, is_confirm=True)
+        return models.Order.objects.filter(is_confirm=True)
 
 
 class OrderIsNotConfirmListApiView(views.APIView):
     permission_classes = [permissions.IsCashier]
 
     def get(self, request):
-        orders = models.Order.objects.filter(cart__user=request.user, is_confirm=False, status=models.DONE)
+        orders = models.Order.objects.filter(is_confirm=False, status=models.DONE)
         print(request.user)
         serializer = serializers.OrderListSerializer(orders, many=True)
         return Response(serializer.data)
