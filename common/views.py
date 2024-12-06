@@ -217,7 +217,6 @@ class FinishDayApiView(views.APIView):
 class OrderConfirmApiView(generics.GenericAPIView):
     serializer_class = serializers.OrderFoodConfirmSerializer
     permission_classes = [permissions.IsCashier]
-    pagination_class = None
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -230,6 +229,7 @@ class OrderConfirmApiView(generics.GenericAPIView):
 class OrderIsConfirmListApiView(generics.ListAPIView):
     permission_classes = [permissions.IsCashier]
     serializer_class = serializers.OrderListSerializer
+    pagination_class = None
 
     def get_queryset(self):
         start_of_day = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
