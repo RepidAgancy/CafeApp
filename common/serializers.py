@@ -124,7 +124,7 @@ class CartItemCreateSerializer(serializers.Serializer):
             'cart': {
                 'id': cart_item.cart.id,
                 'user': cart_item.cart.user.username,
-                'table': cart_item.cart.table.number,
+                'table': cart_item.cart.table.number if cart_item.cart.table else 0,
                 'total_price': f'{cart_item.cart.total_price} UZS',
             },
             'quantity': cart_item.quantity,
