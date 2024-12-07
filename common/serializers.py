@@ -188,7 +188,7 @@ class CartItemSerializer(serializers.ModelSerializer):
 
 class CartSerializer(serializers.ModelSerializer):
     cart_items = serializers.SerializerMethodField(method_name='get_cart_items')
-    table = serializers.IntegerField(source='table.number')
+    table = serializers.SerializerMethodField(method_name='get_table_number')
 
     class Meta:
         model = models.Cart
@@ -196,6 +196,11 @@ class CartSerializer(serializers.ModelSerializer):
             'id', 'user', 'table', 'total_price', 'cart_items',
         ]
 
+    def get_table_number(self, obj):
+        if obj.table:
+            return obj.table.number
+        else:
+            return 0
     def get_cart_items(self, obj):
         cart = models.Cart.objects.get(id=obj.id)
         cart_items = models.CartItem.objects.filter(cart=cart)
@@ -241,7 +246,7 @@ class OrderCreateSerializer(serializers.ModelSerializer):
             'cart': CartSerializer(order.cart).data,
             'cart_is_confirm': cart.is_confirm,
             'total_price': cart.total_price,
-            'table_number': cart.table.number,
+            'table_number': cart.table.number if cart.table else 0,
         }
 
 
@@ -288,13 +293,16 @@ class OrderCartItemListSerializer(serializers.ModelSerializer):
 
 class OrderCartListSerializer(serializers.ModelSerializer):
     cart_items = serializers.SerializerMethodField(method_name='get_cart_items')
-    table_number = serializers.IntegerField(source='table.number')
+    table_number = serializers.SerializerMethodField(method_name='get_table')
 
     class Meta:
         model = models.Cart
         fields = [
             'id', 'table_number', 'cart_items'
         ]
+
+    def get_table(self, obj):
+        return obj.table.number if obj.table else 0
 
     def get_cart_items(self, obj):
         cart_items = models.CartItem.objects.filter(cart=obj)
@@ -362,8 +370,9 @@ class OrderFoodConfirmSerializer(serializers.Serializer):
     def save(self, *args, **kwargs):
         order = models.Order.objects.get(id=self.validated_data['order_id'])
         order.is_confirm = True
-        order.cart.table.is_busy = False
-        order.cart.table.save()
+        if order.cart.table:
+            order.cart.table.is_busy = False
+            order.cart.table.save()
         order.save()
 
         return {
