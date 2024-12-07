@@ -229,7 +229,6 @@ class OrderConfirmApiView(generics.GenericAPIView):
 class OrderIsConfirmListApiView(generics.ListAPIView):
     permission_classes = [permissions.IsCashier]
     serializer_class = serializers.OrderListSerializer
-    pagination_class = None
 
     def get_queryset(self):
         start_of_day = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
