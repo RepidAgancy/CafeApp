@@ -48,7 +48,7 @@ class FoodListApiView(generics.ListAPIView):
     pagination_class = None
     permission_classes = [permissions.IsCashierOrWaiter]
 
-    @method_decorator(cache_page(60 * 3))
+    @method_decorator(cache_page(60 * 5))
     def get(self, request, *args, **kwargs):
         return super().get(request, *args, **kwargs)
 
@@ -59,12 +59,20 @@ class FoodDetailApiView(generics.RetrieveAPIView):
     queryset = models.Food.objects.all()
     lookup_field = 'id'
 
+    @method_decorator(cache_page(60 * 5))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
-class FoodCategoryListApiView(generics.ListAPIView):
-    queryset = models.CategoryFood.objects.all()
-    serializer_class = serializers.FoodCategorySerializer
+
+class FoodCategoryListApiView(views.APIView):
     permission_classes = [permissions.IsCashierOrWaiter]
     pagination_class = None
+
+    @method_decorator(cache_page(60 * 5))
+    def get(self, request, *args, **kwargs):
+        categories = models.CategoryFood.objects.all()
+        serializer = serializers.FoodCategorySerializer(categories, many=True)
+        return Response(serializer.data)
 
 
 class FoodListByCategoryApiView(generics.GenericAPIView):
@@ -72,6 +80,7 @@ class FoodListByCategoryApiView(generics.GenericAPIView):
     serializer_class = serializers.FoodListByCategorySerializer
     pagination_class = None
 
+    @method_decorator(cache_page(60*5))
     def get(self, request, category_id):
         try:
             category = models.CategoryFood.objects.get(id=category_id)
@@ -79,12 +88,6 @@ class FoodListByCategoryApiView(generics.GenericAPIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         foods = models.Food.objects.filter(category=category)
-
-        page = self.paginate_queryset(foods)  # Apply pagination to the queryset
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)  # Return paginated response
-
         serializer = self.get_serializer(foods, many=True)
         return Response(serializer.data)
 
@@ -115,11 +118,9 @@ class CartItemEditApiView(generics.GenericAPIView):
 
 
 class CartItemDeleteApiView(generics.GenericAPIView):
-    # serializer_class = serializers.CartItemUpdateSerializer
     permission_classes = [permissions.IsCashierOrWaiter]
-    queryset = models.CartItem.objects.all()
 
-    def delete(self, request, cart_item_id, *args, **kwargs):
+    def delete(self, request, cart_item_id):
         try:
             cart_item = models.CartItem.objects.get(pk=cart_item_id)
         except models.CartItem.DoesNotExist:
@@ -128,11 +129,7 @@ class CartItemDeleteApiView(generics.GenericAPIView):
             return Response({'message': 'You can not delete this cart item'})
         else:
             if cart_item.cart.user == request.user:
-                food_price = cart_item.food.price
-                food_quantity = cart_item.quantity
-                cart_total_price = cart_item.cart.total_price
-                total_price = cart_total_price - (food_price * food_quantity)
-                cart_item.cart.total_price = total_price
+                cart_item.cart.total_price = cart_item.cart.total_price - (cart_item.food.price * cart_item.quantity)
                 cart_item.cart.save()
                 cart_item.delete()
         return Response({'message': 'Cart item successfully deleted'}, status=status.HTTP_200_OK)
