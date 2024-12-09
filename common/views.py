@@ -1,6 +1,8 @@
 from datetime import timedelta
 
 from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status, views
 from rest_framework.response import Response
@@ -45,6 +47,10 @@ class FoodListApiView(generics.ListAPIView):
     filterset_class = filters.FoodFilter
     pagination_class = None
     permission_classes = [permissions.IsCashierOrWaiter]
+
+    @method_decorator(cache_page(60 * 3))
+    def get(self, request, *args, **kwargs):
+        return super().get(request, *args, **kwargs)
 
 
 class FoodDetailApiView(generics.RetrieveAPIView):
