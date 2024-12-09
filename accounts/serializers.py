@@ -19,7 +19,7 @@ class LoginSerializer(serializers.Serializer):
             user = authenticate(username=username, password=password)
             if not user:
                 raise serializers.ValidationError({'detail': 'No active account found with the given credentials'})
-            cache.set(f"user_{username}", user, timeout=300)  # 5 daqiqa kesh
+            cache.set(f"user_{username}", user, timeout=60*60)
 
         if not user.is_active:
             raise serializers.ValidationError({'detail': 'User account is disabled'})
