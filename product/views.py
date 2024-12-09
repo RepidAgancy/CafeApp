@@ -1,3 +1,5 @@
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status, views
 from rest_framework.response import Response
@@ -8,6 +10,7 @@ from product import models, serializers, permissions, filters
 class ProductCategoryListApiView(views.APIView):
     permission_classes = [permissions.IsStorekeeper, ]
 
+    @method_decorator(cache_page(60*5))
     def get(self, request):
         categories = models.CategoryProduct.objects.all()
         serializer = serializers.ProductCategoryListSerializer(categories, many=True)
@@ -21,6 +24,10 @@ class ProductListApiView(generics.ListAPIView):
     filterset_class = filters.ProductFilter
     permission_classes = [permissions.IsStorekeeper, ]
     pagination_class = None
+
+    @method_decorator(cache_page(60*5))
+    def get(self, request):
+        return super().get(request)
 
 
 class GetOrderApiView(views.APIView):
@@ -135,6 +142,7 @@ class ProductCreateApiView(generics.GenericAPIView):
 class GetUnitStatusApiView(views.APIView):
     permission_classes = [permissions.IsStorekeeper, ]
 
+    @method_decorator(cache_page(60*1000))
     def get(self, request):
         data = {
             'status': models.CartItemProduct.get_unit_status()
@@ -147,6 +155,7 @@ class ProductListByCategoryApiView(generics.GenericAPIView):
     serializer_class = serializers.ProductListByCategorySerializer
     pagination_class = None
 
+    @method_decorator(cache_page(60*5))
     def get(self, request, category_id):
         try:
             category = models.CategoryProduct.objects.get(id=category_id)
