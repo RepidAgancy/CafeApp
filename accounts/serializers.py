@@ -1,4 +1,4 @@
-from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -12,24 +12,25 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, data):
         username = data['username']
         password = data['password']
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
+
+        user = authenticate(username=username, password=password)
+        if not user:
             raise serializers.ValidationError({'detail': 'No active account found with the given credentials'})
-        if not user.check_password(password):
-            raise serializers.ValidationError({'detail': 'No active account found with the given '})
+
+        if not user.is_active:
+            raise serializers.ValidationError({'detail': 'User account is disabled'})
+
         data['user'] = user
         return data
 
     def save(self):
         user = self.validated_data['user']
         token = RefreshToken.for_user(user)
-        data = {
-            'user_type': user.type if hasattr(user, 'type') else None,
+        return {
+            'user_type': getattr(user, 'type', None),
             'refresh': str(token),
-            'access': str(token.access_token)
+            'access': str(token.access_token),
         }
-        return data
 
 
 class LogoutSerializer(serializers.Serializer):

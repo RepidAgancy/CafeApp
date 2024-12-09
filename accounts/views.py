@@ -6,7 +6,6 @@ from crm import permissions as permission
 from accounts import serializers
 from accounts.models import User
 from accounts.serializers import UserProfileSerializer
-from crm.serializers import UserListSerializer
 
 
 class LoginApiView(generics.GenericAPIView):
@@ -14,10 +13,9 @@ class LoginApiView(generics.GenericAPIView):
     serializer_class = serializers.LoginSerializer
 
     def post(self, request):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            return Response(serializer.save(), status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer = serializers.LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.save(), status=status.HTTP_200_OK)
 
 
 class LogOutView(generics.GenericAPIView):
