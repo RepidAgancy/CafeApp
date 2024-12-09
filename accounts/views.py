@@ -38,6 +38,7 @@ class LogOutView(generics.GenericAPIView):
 
 
 class UserTypeListApiView(views.APIView):
+    @method_decorator(cache_page(60*1000))
     def get(self, request):
         data = {
             'user_type': User.get_user_type_list()
