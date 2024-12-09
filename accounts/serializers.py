@@ -1,3 +1,4 @@
+from django.core.cache import cache
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -12,10 +13,13 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, data):
         username = data['username']
         password = data['password']
+        user = cache.get(f"user_{username}")
 
-        user = authenticate(username=username, password=password)
         if not user:
-            raise serializers.ValidationError({'detail': 'No active account found with the given credentials'})
+            user = authenticate(username=username, password=password)
+            if not user:
+                raise serializers.ValidationError({'detail': 'No active account found with the given credentials'})
+            cache.set(f"user_{username}", user, timeout=300)  # 5 daqiqa kesh
 
         if not user.is_active:
             raise serializers.ValidationError({'detail': 'User account is disabled'})
