@@ -177,7 +177,7 @@ class OrderListInProcessApiView(generics.ListAPIView):
         return models.Order.objects.filter(
             status=models.IN_PROCESS,
             cart__user=self.request.user
-        )
+        ).order_by("-created_at")
 
 
 class OrderListIsDoneApiView(generics.GenericAPIView):

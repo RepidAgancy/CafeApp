@@ -16,14 +16,13 @@ class ProductListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Product
-        fields = ['id', 'name_uz', 'name_ru', 'name_en', 'image', 'price']
-
+        fields = ['id', 'name_uz', 'name_ru', 'name_en', 'image']
 
 
 class ProductCartItemCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.CartItemProduct
-        fields = ['product', 'weight', 'unit_status', 'cart', 'date', 'time']
+        fields = ['product', 'weight', 'unit_status', 'cart', 'date', 'time', 'price']
         extra_kwargs = {
             'data': {'required': True}, 'time': {'required': True},
         }
@@ -38,6 +37,7 @@ class ProductCartItemCreateSerializer(serializers.ModelSerializer):
             unit_status=validated_data['unit_status'],
             date=validated_data['date'] if validated_data['date'] else timezone.now().date,
             time=validated_data['time'],
+            price=validated_data['price'],
         )
         price = product.price * validated_data['weight']
         cart.total_price += price
@@ -53,6 +53,7 @@ class ProductCartItemCreateSerializer(serializers.ModelSerializer):
             'unit_status': cart_item.unit_status,
             'date': cart_item.date,
             'time': cart_item.time,
+            'price': cart_item.price
         }
 
 
@@ -92,15 +93,11 @@ class ProductItemEditSerializer(serializers.ModelSerializer):
 
 
 class ProductCartItemSerializer(serializers.ModelSerializer):
-    price = serializers.SerializerMethodField(method_name='get_price')
     product_name = serializers.CharField(source='product.name')
 
     class Meta:
         model = models.CartItemProduct
         fields = ['id', 'product_name', 'product_image', 'weight', 'unit_status', 'price']
-
-    def get_price(self, obj):
-        return obj.product.price
 
 
 class ProductCartSerializer(serializers.ModelSerializer):
@@ -183,13 +180,12 @@ class ProductOrderListSerializer(serializers.ModelSerializer):
         return ProductCartSerializer(obj.cart).data
 
     def get_total_price(self, obj):
-        return f'{obj.cart.total_price} uzs'
+        return obj.cart.total_price
 
 
 class ProductCreateSerializer(serializers.Serializer):
     product_name = serializers.CharField()
     image = serializers.ImageField()
-    price = serializers.DecimalField(max_digits=10, decimal_places=3)
     category = serializers.IntegerField()
 
     def validate(self, data):
@@ -204,7 +200,6 @@ class ProductCreateSerializer(serializers.Serializer):
         product = models.Product.objects.create(
             name=validated_data['product_name'],
             image=validated_data['image'],
-            price=validated_data['price'],
             category=category,
         )
         return {
@@ -217,5 +212,5 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Product
         fields = [
-            'id', 'name_uz', 'name_ru', 'name_en', 'image', 'price',
+            'id', 'name_uz', 'name_ru', 'name_en', 'image',
         ]

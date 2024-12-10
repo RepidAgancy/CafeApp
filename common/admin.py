@@ -3,6 +3,7 @@ from django.utils.html import format_html
 
 from common import models
 
+
 @admin.register(models.Table)
 class TableAdmin(admin.ModelAdmin):
     list_display = ('number', 'is_busy')

@@ -23,7 +23,6 @@ class CategoryProduct(BaseModel):
 class Product(BaseModel):
     category = models.ForeignKey(CategoryProduct, on_delete=models.CASCADE, related_name='products')
     name = models.CharField(max_length=100)
-    price = models.PositiveIntegerField(default=0)
     image = models.ImageField(upload_to='product/product/')
 
     def save(self, *args, **kwargs):
@@ -79,6 +78,7 @@ class CartItemProduct(BaseModel):
     date = models.DateField(null=True, blank=True)
     time = models.TimeField(null=True, blank=True)
     cart = models.ForeignKey(CartProduct, on_delete=models.CASCADE, related_name='cart_items_products')
+    price = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return f'{self.product.name} - {self.weight} in {self.unit_status}'
