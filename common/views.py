@@ -256,7 +256,7 @@ class CashierFinishDayApiView(views.APIView):
     def post(self, request):
         today = timezone.now().date()
         if models.Order.objects.filter(is_confirm=False):
-            return Response({'message': 'Siz kunni yakunlay olmaysiz qachonki buyurtmalar toliq tugatilmaguncha'})
+            return Response({'message': 'Siz kunni yakunlay olmaysiz qachonki buyurtmalar toliq tugatilmaguncha'}, status=status.HTTP_400_BAD_REQUEST)
         orders = models.Order.objects.filter(created_at__date=today)
         delivery_orders = models.Order.objects.filter(cart__user=request.user, created_at__date=today).count()
         total_price = 0
