@@ -214,3 +214,9 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name_uz', 'name_ru', 'name_en', 'image',
         ]
+
+
+class ProductDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Product
+        fields = ['id', 'name_uz', 'name_ru', 'name_en', 'image']

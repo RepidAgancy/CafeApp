@@ -166,3 +166,12 @@ class ProductListByCategoryApiView(generics.GenericAPIView):
 
         serializer = self.get_serializer(products, many=True)
         return Response(serializer.data)
+
+
+class ProductDetailApiView(generics.GenericAPIView):
+    serializer_class = serializers.ProductDetailSerializer
+
+    def get(self, request, product_id):
+        product = models.Product.objects.get(id=product_id)
+        serializer = serializers.ProductDetailSerializer(product)
+        return Response(serializer.data, status=status.HTTP_200_OK)
