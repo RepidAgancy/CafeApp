@@ -9,14 +9,14 @@ class ProductCategoryListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.CategoryProduct
-        fields = ['id', 'name_uz', 'name_ru', 'name_en', 'image',]
+        fields = ['id', 'name_uz', 'image',]
 
 
 class ProductListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Product
-        fields = ['id', 'name_uz', 'name_ru', 'name_en', 'image']
+        fields = ['id', 'name_uz', 'image']
 
 
 class ProductCartItemCreateSerializer(serializers.ModelSerializer):
@@ -212,11 +212,11 @@ class ProductListByCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Product
         fields = [
-            'id', 'name_uz', 'name_ru', 'name_en', 'image',
+            'id', 'name_uz', 'image',
         ]
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Product
-        fields = ['id', 'name_uz', 'name_ru', 'name_en', 'image']
+        fields = ['id', 'name_uz', 'image']
