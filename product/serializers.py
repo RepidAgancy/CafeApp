@@ -39,7 +39,7 @@ class ProductCartItemCreateSerializer(serializers.ModelSerializer):
             time=validated_data['time'],
             price=validated_data['price'],
         )
-        price = product.price * validated_data['weight']
+        price = cart_item.price * validated_data['weight']
         cart.total_price += price
         cart.save()
         return {
