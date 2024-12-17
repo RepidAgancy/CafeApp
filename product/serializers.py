@@ -93,7 +93,8 @@ class ProductItemEditSerializer(serializers.ModelSerializer):
 
 
 class ProductCartItemSerializer(serializers.ModelSerializer):
-    product_name = serializers.CharField(source='product.name')
+    product_name = serializers.CharField(source='product.name_uz')
+    product_image = serializers.ImageField(source='product.image')
 
     class Meta:
         model = models.CartItemProduct
