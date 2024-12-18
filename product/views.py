@@ -4,6 +4,9 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics, status, views
 from rest_framework.response import Response
 
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
 from product import models, serializers, permissions, filters
 
 
@@ -55,6 +58,15 @@ class ProductCartItemUpdateApiView(generics.GenericAPIView):
     serializer_class = serializers.ProductItemEditSerializer
     permission_classes = [permissions.IsStorekeeper, ]
 
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(
+                'cart_item_id', openapi.IN_PATH,
+                description='cart item id',
+                type=openapi.TYPE_INTEGER,
+            )
+        ]
+    )
     def patch(self, request, cart_item_id):
         serializer = self.get_serializer(data=request.data, context={'request': request, 'cart_item_id': cart_item_id})
         if serializer.is_valid():
