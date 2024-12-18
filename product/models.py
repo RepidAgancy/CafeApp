@@ -81,7 +81,7 @@ class CartItemProduct(BaseModel):
     price = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return f'{self.product.name} - {self.weight} in {self.unit_status}'
+        return f'{self.product.name_uz} - {self.weight} in {self.unit_status}'
 
     class Meta:
         verbose_name = _('savatdagi mahsulot dona')
