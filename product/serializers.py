@@ -67,7 +67,7 @@ class ProductItemEditSerializer(serializers.ModelSerializer):
     def validate(self, data):
         user = self.context['request'].user
         try:
-            cart_item = models.CartItemProduct.objects.get(pk=data['cart_item_id'])
+            cart_item = models.CartItemProduct.objects.get(pk=self.context['cart_item_id'])
         except models.CartItemProduct.DoesNotExist:
             raise serializers.ValidationError({"message": "CartItem does not exist"})
         if cart_item.cart.user != user:
@@ -76,10 +76,10 @@ class ProductItemEditSerializer(serializers.ModelSerializer):
         return data
 
     def save(self):
-        cart_item = models.CartItemProduct.objects.get(pk=self.data['cart_item_id'])
+        cart_item = models.CartItemProduct.objects.get(pk=self.context['cart_item_id'])
 
         old_weight = cart_item.weight
-        product_price = cart_item.product.price
+        product_price = cart_item.price
         total_price = cart_item.cart.total_price
         total_price -= (old_weight * product_price)
 

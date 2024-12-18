@@ -55,8 +55,8 @@ class ProductCartItemUpdateApiView(generics.GenericAPIView):
     serializer_class = serializers.ProductItemEditSerializer
     permission_classes = [permissions.IsStorekeeper, ]
 
-    def patch(self, request):
-        serializer = self.get_serializer(data=request.data, context={'request': request})
+    def patch(self, request, cart_item_id):
+        serializer = self.get_serializer(data=request.data, context={'request': request, 'cart_item_id': cart_item_id})
         if serializer.is_valid():
             return Response(serializer.save(), status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -73,7 +73,7 @@ class ProductCartItemDeleteApiView(generics.GenericAPIView):
             return Response({'message': 'Cart item is not found'}, status=status.HTTP_404_NOT_FOUND)
         if cart_item.cart.user != user:
             return Response({'message': 'You are not allowed to delete'})
-        total_price = cart_item.cart.total_price - (cart_item.weight * cart_item.product.price)
+        total_price = cart_item.cart.total_price - (cart_item.weight * cart_item.price)
         cart_item.cart.total_price = total_price
         cart_item.cart.save()
         cart_item.delete()
