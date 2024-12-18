@@ -65,7 +65,7 @@ class ProductCartItemUpdateApiView(generics.GenericAPIView):
 class ProductCartItemDeleteApiView(generics.GenericAPIView):
     permission_classes = [permissions.IsStorekeeper, ]
 
-    def delete(self, request):
+    def delete(self, request, id):
         user = request.user
         try:
             cart_item = models.CartItemProduct.objects.get(id=id)
