@@ -47,7 +47,7 @@ class ProductCartItemCreateSerializer(serializers.ModelSerializer):
         return {
             'product': ProductListSerializer(cart_item.product).data,
             'cart': {
-                'id': cart_item.id,
+                'id': cart.id,
                 'user': cart_item.cart.user.id,
                 'total_price': cart_item.cart.total_price,
             },
