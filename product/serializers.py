@@ -20,6 +20,8 @@ class ProductListSerializer(serializers.ModelSerializer):
 
 
 class ProductCartItemCreateSerializer(serializers.ModelSerializer):
+    time = serializers.TimeField(input_formats=['%H-%M'])
+
     class Meta:
         model = models.CartItemProduct
         fields = ['product', 'weight', 'unit_status', 'cart', 'date', 'time', 'price']
