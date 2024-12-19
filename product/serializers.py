@@ -176,10 +176,11 @@ class ProductOrderListSerializer(serializers.ModelSerializer):
     total_price = serializers.SerializerMethodField(method_name='get_total_price')
     date = serializers.SerializerMethodField(method_name='get_date')
     time = serializers.SerializerMethodField(method_name='get_time')
+    full_name = serializers.SerializerMethodField(method_name='get_full_name')
 
     class Meta:
         model = models.OrderProduct
-        fields = ['id', 'cart', 'status', 'total_price', 'date', 'time']
+        fields = ['id', 'cart', 'status', 'total_price', 'date', 'time', 'full_name']
 
     def get_cart(self, obj):
         return ProductCartSerializer(obj.cart).data
@@ -192,6 +193,9 @@ class ProductOrderListSerializer(serializers.ModelSerializer):
 
     def get_time(self, obj):
         return obj.created_at.time().strftime("%H:%S")
+
+    def get_full_name(self, obj):
+        return f'{obj.cart.user.first_name} {obj.cart.user.last_name}'
 
 
 class ProductCreateSerializer(serializers.Serializer):
