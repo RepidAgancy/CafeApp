@@ -191,7 +191,7 @@ class ProductOrderListSerializer(serializers.ModelSerializer):
         return obj.created_at.date()
 
     def get_time(self, obj):
-        return obj.created_at.time()
+        return obj.created_at.time().strftime("%H:%S")
 
 
 class ProductCreateSerializer(serializers.Serializer):
