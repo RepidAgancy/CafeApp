@@ -17,6 +17,7 @@ class TableListApiView(generics.ListAPIView):
     pagination_class = None
 
     def get_queryset(self):
+        print(timezone.now())
         if self.request.user.type == WAITER:
             return models.Table.objects.exclude(number=0).order_by('number')
         else:
