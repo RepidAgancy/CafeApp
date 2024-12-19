@@ -136,7 +136,7 @@ class ProductOrderIsConfirmApiView(generics.ListAPIView):
 class ProductOrderIsNotConfirmApiView(generics.ListAPIView):
     serializer_class = serializers.ProductOrderListSerializer
     permission_classes = [permissions.IsStorekeeper, ]
-    queryset = models.OrderProduct.objects.filter(is_confirm=True)
+    queryset = models.OrderProduct.objects.filter(is_confirm=False)
     pagination_class = None
 
 
