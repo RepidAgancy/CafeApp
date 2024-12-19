@@ -265,7 +265,7 @@ class CashierFinishDayApiView(views.APIView):
             total_price += order.cart.total_price
 
         data = {
-            'sana': today,
+            'sana': today.strftime("%d.%m.%y"),
             'orders_count': orders.count(),
             'delivery': delivery_orders,
             'total_price': total_price,
