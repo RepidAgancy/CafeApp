@@ -152,13 +152,16 @@ class FoodCreateUpdateSerializer(serializers.ModelSerializer):
 
     
 class ProductSerializer(serializers.ModelSerializer):
-    category_name = serializers.CharField(source='category.name')
+    category_name = serializers.SerializerMethod(method_name="get_category_name")
 
     class Meta:
         model = Product
         fields = [
             'id', 'name_uz', 'image', 'category', 'category_name',
         ]
+
+    def get_category_name(self, obj):
+        return obj.category.name
 
 
 class CartProductsSerializer(serializers.ModelSerializer):
