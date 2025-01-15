@@ -175,7 +175,7 @@ class SearchAPIView(generics.GenericAPIView):
             Q(**{f'food_info__icontains': query})
         )
         products = Product.objects.filter(
-            Q(**{f'name__icontains': query})
+            Q(**{f'name_uz__icontains': query})
         )
         
 
