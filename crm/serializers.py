@@ -152,7 +152,7 @@ class FoodCreateUpdateSerializer(serializers.ModelSerializer):
 
     
 class ProductSerializer(serializers.ModelSerializer):
-    category_name = serializers.SerializerMethod(method_name="get_category_name")
+    category_name = serializers.SerializerMethodField(method_name="get_category_name")
 
     class Meta:
         model = Product
