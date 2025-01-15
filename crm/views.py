@@ -172,10 +172,10 @@ class SearchAPIView(generics.GenericAPIView):
         current_language = get_language()
         foods = Food.objects.filter(
             Q(name__icontains = query) |
-            Q(**{f'food_info_{current_language}__icontains': query})
+            Q(**{f'food_info__icontains': query})
         )
         products = Product.objects.filter(
-            Q(**{f'name_{current_language}__icontains': query})
+            Q(**{f'name__icontains': query})
         )
         
 
