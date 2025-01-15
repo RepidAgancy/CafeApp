@@ -161,7 +161,7 @@ class ProductSerializer(serializers.ModelSerializer):
         ]
 
     def get_category_name(self, obj):
-        return obj.category.name
+        return obj.category.name_uz
 
 
 class CartProductsSerializer(serializers.ModelSerializer):
